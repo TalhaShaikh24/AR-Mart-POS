@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { X, ShieldCheck, KeyRound, Lock, UserCheck, Check, AlertCircle } from 'lucide-react';
+import { X, ShieldCheck, KeyRound, Lock, UserCheck, Check, AlertCircle, Users } from 'lucide-react';
 
-export default function SecurityModal({ isOpen, onClose, currentUser, availableUsers, onPinUpdated }) {
+export default function SecurityModal({ isOpen, onClose, currentUser, availableUsers, onPinUpdated, onOpenUsersManager }) {
   const [activeTab, setActiveTab] = useState('self'); // 'self' | 'admin'
 
   // Self PIN Change State
@@ -129,6 +129,19 @@ export default function SecurityModal({ isOpen, onClose, currentUser, availableU
             <UserCheck size={15} />
             <span>Admin PIN Reset {isAdmin ? '' : '(Admin Only)'}</span>
           </button>
+          {isAdmin && (
+            <button 
+              className="sec-tab-btn"
+              onClick={() => {
+                if (onOpenUsersManager) onOpenUsersManager();
+              }}
+              style={{ background: '#f0fdf4', color: '#166534', border: '1px solid #bbf7d0', fontWeight: 800 }}
+              title="Open Full User Management Module (Add, Edit, Delete Users)"
+            >
+              <Users size={15} />
+              <span>Users Module 👥</span>
+            </button>
+          )}
         </div>
 
         <div className="react-modal-body">

@@ -334,6 +334,137 @@ app.post('/api/users/admin-reset-pin', async (req, res) => {
   }
 });
 
+// --- ADMIN USERS MODULE (List with PINs, Create, Update, Delete) ---
+app.get('/api/users/admin/all', async (req, res) => {
+  try {
+    if (isMongoConnected) {
+      const users = await User.find().sort({ role: 1, name: 1 });
+      return res.json(users);
+    }
+    res.json(memoryStore.users);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/users/admin/create', async (req, res) => {
+  try {
+    let { name, username, role, pin, avatar, active } = req.body;
+    if (!name || !username || !pin) {
+      return res.status(400).json({ success: false, message: 'Name, username, and PIN are required.' });
+    }
+
+    username = username.toLowerCase().trim().replace(/[^a-z0-9_-]/g, '');
+    if (!username) {
+      return res.status(400).json({ success: false, message: 'Invalid username.' });
+    }
+
+    if (!/^\d{4,6}$/.test(String(pin).trim())) {
+      return res.status(400).json({ success: false, message: 'PIN must be 4 to 6 numeric digits.' });
+    }
+
+    const newUserObj = {
+      name: name.trim(),
+      username,
+      role: role || 'Cashier',
+      pin: String(pin).trim(),
+      avatar: avatar?.trim() || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop&crop=faces',
+      active: active !== undefined ? Boolean(active) : true
+    };
+
+    if (isMongoConnected) {
+      const existing = await User.findOne({ username });
+      if (existing) {
+        return res.status(400).json({ success: false, message: `Username "${username}" is already taken.` });
+      }
+      const created = await User.create(newUserObj);
+      return res.status(201).json({ success: true, user: created });
+    } else {
+      const existing = memoryStore.users.find(u => u.username === username);
+      if (existing) {
+        return res.status(400).json({ success: false, message: `Username "${username}" is already taken.` });
+      }
+      memoryStore.users.push(newUserObj);
+      return res.status(201).json({ success: true, user: newUserObj });
+    }
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+app.put('/api/users/admin/update/:username', async (req, res) => {
+  try {
+    const targetUsername = req.params.username.toLowerCase().trim();
+    const { name, role, pin, avatar, active } = req.body;
+
+    const updateFields = {};
+    if (name) updateFields.name = name.trim();
+    if (role) updateFields.role = role;
+    if (avatar !== undefined) updateFields.avatar = avatar.trim();
+    if (active !== undefined) updateFields.active = Boolean(active);
+    if (pin && /^\d{4,6}$/.test(String(pin).trim())) {
+      updateFields.pin = String(pin).trim();
+    }
+
+    if (isMongoConnected) {
+      const updated = await User.findOneAndUpdate(
+        { username: targetUsername },
+        { $set: updateFields },
+        { returnDocument: 'after' }
+      );
+      if (!updated) {
+        return res.status(404).json({ success: false, message: 'User not found.' });
+      }
+      return res.json({ success: true, user: updated });
+    } else {
+      const idx = memoryStore.users.findIndex(u => u.username === targetUsername);
+      if (idx === -1) {
+        return res.status(404).json({ success: false, message: 'User not found.' });
+      }
+      memoryStore.users[idx] = { ...memoryStore.users[idx], ...updateFields };
+      return res.json({ success: true, user: memoryStore.users[idx] });
+    }
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+app.delete('/api/users/admin/delete/:username', async (req, res) => {
+  try {
+    const targetUsername = req.params.username.toLowerCase().trim();
+
+    if (isMongoConnected) {
+      const userToDelete = await User.findOne({ username: targetUsername });
+      if (!userToDelete) {
+        return res.status(404).json({ success: false, message: 'User not found.' });
+      }
+      if (userToDelete.role === 'Admin') {
+        const adminCount = await User.countDocuments({ role: 'Admin' });
+        if (adminCount <= 1) {
+          return res.status(400).json({ success: false, message: 'Cannot delete the only Admin user!' });
+        }
+      }
+      await User.deleteOne({ username: targetUsername });
+    } else {
+      const userToDelete = memoryStore.users.find(u => u.username === targetUsername);
+      if (!userToDelete) {
+        return res.status(404).json({ success: false, message: 'User not found.' });
+      }
+      if (userToDelete.role === 'Admin') {
+        const adminCount = memoryStore.users.filter(u => u.role === 'Admin').length;
+        if (adminCount <= 1) {
+          return res.status(400).json({ success: false, message: 'Cannot delete the only Admin user!' });
+        }
+      }
+      memoryStore.users = memoryStore.users.filter(u => u.username !== targetUsername);
+    }
+
+    res.json({ success: true, message: `User "${targetUsername}" deleted successfully.` });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 // Held Bills (Hold / Resume order)
 app.get('/api/bills/hold', (req, res) => {
   res.json(memoryStore.heldBills || []);

@@ -15,6 +15,7 @@ import ShortcutsModal from './components/ShortcutsModal';
 import CustomItemModal from './components/CustomItemModal';
 import ReceiptPreviewModal from './components/ReceiptPreviewModal';
 import SecurityModal from './components/SecurityModal';
+import UsersModal from './components/UsersModal';
 
 import { 
   Search, 
@@ -23,6 +24,7 @@ import {
   History, 
   ShieldCheck, 
   Package, 
+  Users,
   Settings, 
   Printer, 
   Eye, 
@@ -124,6 +126,7 @@ export default function App() {
   const [showShortcutsModal, setShowShortcutsModal] = useState(false);
   const [showCustomItem, setShowCustomItem] = useState(false);
   const [showSecurityModal, setShowSecurityModal] = useState(false);
+  const [showUsersModal, setShowUsersModal] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const [receiptToPrint, setReceiptToPrint] = useState(null);
 
@@ -726,6 +729,16 @@ export default function App() {
           <button className="f-text-btn" onClick={() => setShowProducts(true)}>
             <Package size={14} /> <span>Products</span>
           </button>
+          {currentUser?.role === 'Admin' && (
+            <button 
+              className="f-text-btn" 
+              onClick={() => setShowUsersModal(true)} 
+              title="Manage POS Users & Cashiers"
+              style={{ color: '#86efac', borderColor: 'rgba(134, 239, 172, 0.4)' }}
+            >
+              <Users size={14} /> <span>Users</span>
+            </button>
+          )}
           <button className="f-text-btn" onClick={() => setShowSettings(true)}>
             <Settings size={14} /> <span>Settings</span>
           </button>
@@ -1320,6 +1333,16 @@ export default function App() {
       currentUser={currentUser} 
       availableUsers={availableUsers} 
       onPinUpdated={fetchInitialData} 
+      onOpenUsersManager={() => {
+        setShowSecurityModal(false);
+        setShowUsersModal(true);
+      }}
+    />
+    <UsersModal 
+      isOpen={showUsersModal} 
+      onClose={() => setShowUsersModal(false)} 
+      currentUser={currentUser} 
+      onUsersUpdated={fetchInitialData} 
     />
     </>
   );
