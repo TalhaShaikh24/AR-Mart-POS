@@ -3547,174 +3547,321 @@ input:checked + .f-slider::before { transform: translateX(16px); }
 
 /* On-Screen Base Thermal Receipt Styles */
 .thermal-receipt {
-  font-family: 'Courier New', Courier, monospace;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   font-size: 8.5pt;
-  line-height: 1.25;
+  line-height: 1.3;
   color: #000000;
   background: #ffffff;
-  padding: 4px;
+  padding: 6mm 4mm;
+  width: 80mm;
+  max-width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
 }
 
 .rcpt-header {
   text-align: center;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
+}
+
+.rcpt-logo-wrap {
+  margin-bottom: 2px;
+}
+
+.rcpt-logo-img {
+  height: 46px;
+  width: auto;
+  object-fit: contain;
+  margin: 0 auto 2px;
+  display: block;
+}
+
+.rcpt-tagline {
+  font-size: 7.5pt;
+  font-weight: 800;
+  color: #334155;
+  letter-spacing: 0.10em;
+  margin-bottom: 4px;
+  text-transform: uppercase;
 }
 
 .rcpt-store-name {
-  font-size: 13pt;
+  font-size: 16pt;
   font-weight: 900;
-  margin: 2px 0;
-  text-transform: uppercase;
-  letter-spacing: -0.01em;
+  margin: 0 0 3px;
+  letter-spacing: -0.02em;
+  color: #000000;
 }
 
 .rcpt-info-line {
-  font-size: 7.5pt;
-  line-height: 1.3;
+  font-size: 8.2pt;
+  font-weight: 500;
+  line-height: 1.35;
+  color: #000000;
 }
 
 .rcpt-dashed-line {
-  border-top: 1px dashed #000000;
-  margin: 5px 0;
+  border-top: 1.5px dashed #000000 !important;
+  margin: 7px 0;
+  width: 100%;
 }
 
 .rcpt-solid-line {
-  border-top: 1px solid #000000;
+  border-top: 1.5px solid #000000 !important;
   margin: 5px 0;
+  width: 100%;
 }
 
-.rcpt-meta-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  font-size: 8pt;
-  margin: 3px 0;
-  line-height: 1.35;
+.rcpt-meta-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  font-size: 8.5pt;
+  line-height: 1.4;
+  margin: 2px 0;
 }
 
+.rcpt-meta-left {
+  display: flex;
+  flex-direction: column;
+}
+
+.rcpt-meta-right {
+  display: flex;
+  flex-direction: column;
+  text-align: right;
+}
+
+.rcpt-meta-customer {
+  font-size: 7.5pt;
+  color: #333333;
+  margin-top: 2px;
+}
+
+/* Items Table */
 .rcpt-items-table {
   width: 100%;
   border-collapse: collapse;
   font-size: 8pt;
-  margin: 4px 0;
+  margin: 2px 0;
 }
 
 .rcpt-items-table th {
-  border-bottom: 1.5px solid #000000;
-  padding: 3px 1px;
+  padding: 4px 1px;
   font-weight: 800;
-  text-align: left;
+  text-transform: uppercase;
+  color: #000000;
+  vertical-align: bottom;
 }
 
 .rcpt-items-table td {
   padding: 3px 1px;
   vertical-align: top;
+  color: #000000;
 }
 
-.col-num { width: 6%; text-align: left; }
-.col-item { width: 34%; text-align: left; font-weight: 700; word-break: break-word; }
-.col-unit { width: 10%; text-align: center; }
-.col-qty { width: 8%; text-align: center; font-weight: 700; }
-.col-mrp { width: 10%; text-align: right; }
-.col-rate { width: 12%; text-align: right; font-weight: 700; }
-.col-tax { width: 8%; text-align: right; }
-.col-amt { width: 12%; text-align: right; font-weight: 900; }
-.text-right { text-align: right; }
-.sub-th { font-size: 6pt; font-weight: normal; }
+.col-num { width: 4%; text-align: left; }
+.col-item { width: 33%; text-align: left; font-weight: 600; word-break: break-word; }
+.col-unit { width: 9%; text-align: center; }
+.col-qty { width: 6%; text-align: center; font-weight: 700; }
+.col-mrp { width: 12%; text-align: right; font-family: 'JetBrains Mono', monospace; font-variant-numeric: tabular-nums; }
+.col-rate { width: 12%; text-align: right; font-weight: 700; font-family: 'JetBrains Mono', monospace; font-variant-numeric: tabular-nums; }
+.col-tax { width: 10%; text-align: right; font-family: 'JetBrains Mono', monospace; font-variant-numeric: tabular-nums; }
+.col-amt { width: 14%; text-align: right; font-weight: 800; font-family: 'JetBrains Mono', monospace; font-variant-numeric: tabular-nums; }
+.sub-th { font-size: 6.5pt; font-weight: 500; text-transform: none; display: block; line-height: 1.1; }
 
-.rcpt-totals-grid {
+/* Totals Section */
+.rcpt-totals-section {
   display: flex;
   justify-content: space-between;
-  font-size: 8pt;
+  align-items: flex-start;
+  font-size: 8.5pt;
   margin: 4px 0;
 }
 
-.rcpt-total-right {
+.rcpt-totals-left {
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  min-width: 140px;
+  gap: 3px;
 }
 
-.total-row {
+.rcpt-totals-right {
   display: flex;
-  justify-content: space-between;
-  gap: 6px;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 175px;
 }
 
-.rcpt-grand-total {
+.totals-line {
   display: flex;
   justify-content: space-between;
+  align-items: baseline;
+}
+
+.totals-lbl {
+  font-weight: 600;
+}
+
+.totals-lbl.bold {
+  font-weight: 900;
+}
+
+.totals-colon {
+  margin: 0 4px;
+}
+
+.totals-val {
+  text-align: right;
+  flex: 1;
+}
+
+.totals-val.bold {
+  font-weight: 900;
+}
+
+.grand-total-line {
+  margin-top: 4px;
+  padding-top: 4px;
+  border-top: 1px dotted #000000;
+}
+
+.grand-total-line .grand-val {
   font-size: 11pt;
   font-weight: 900;
-  padding: 4px 0;
-  border-top: 1.5px solid #000000;
-  border-bottom: 1.5px solid #000000;
-  margin: 4px 0;
 }
 
-.rcpt-center-text {
+/* Greetings */
+.rcpt-greetings {
   text-align: center;
-  margin: 4px 0;
+  margin: 6px 0;
 }
 
 .rcpt-thankyou {
-  font-size: 8pt;
-  font-weight: 800;
+  font-size: 9.2pt;
+  font-weight: 700;
+  margin: 0 0 2px;
 }
 
 .rcpt-visitagain {
-  font-size: 7.5pt;
+  font-size: 8.8pt;
+  font-style: italic;
+  margin: 0;
 }
 
+/* Bank Details Banner */
 .rcpt-payment-box {
-  margin: 5px 0;
-  font-size: 7.5pt;
   text-align: center;
+  margin: 6px 0;
 }
 
 .rcpt-payment-badge {
+  background: #000000 !important;
+  color: #ffffff !important;
+  display: inline-block;
+  padding: 3px 22px;
+  border-radius: 4px;
+  font-size: 8.5pt;
   font-weight: 900;
-  text-transform: uppercase;
-  margin-bottom: 3px;
+  letter-spacing: 0.06em;
+  margin-bottom: 6px;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
 }
 
-.rcpt-bank-details {
-  display: flex;
+.rcpt-bank-table {
+  display: inline-flex;
   flex-direction: column;
   gap: 2px;
+  text-align: left;
+  font-size: 8.5pt;
 }
 
 .bank-row {
   display: flex;
-  justify-content: center;
-  gap: 6px;
+  align-items: baseline;
 }
 
+.bank-lbl {
+  width: 70px;
+  font-weight: 600;
+}
+
+.bank-colon {
+  margin-right: 6px;
+}
+
+.bank-val {
+  font-weight: 800;
+}
+
+/* QR Code Section */
 .rcpt-qr-section {
   text-align: center;
-  margin-top: 6px;
+  margin: 6px 0 2px;
 }
 
-.rcpt-qr-title {
-  font-size: 7pt;
+.rcpt-qr-title-top {
+  font-size: 9pt;
   font-weight: 700;
-  margin-bottom: 4px;
+  margin-bottom: 1px;
 }
 
-.rcpt-qr-code-box canvas {
-  margin: 4px auto;
+.rcpt-qr-title-sub {
+  font-size: 8.8pt;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.rcpt-qr-container {
+  position: relative;
+  display: inline-block;
+  margin: 0 auto;
+}
+
+.rcpt-qr-canvas {
   display: block;
+  margin: 0 auto;
+  width: 175px !important;
+  height: 175px !important;
 }
 
-.rcpt-qr-name {
-  font-size: 6.5pt;
-  margin-top: 2px;
+.rcpt-qr-center-badge {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #ffffff;
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 0 3px #ffffff;
+  border: 2px solid #16a34a;
 }
 
-.rcpt-cut-mark {
-  text-align: center;
-  font-size: 7pt;
-  margin: 6px 0;
+.qr-badge-ar {
+  font-size: 13px;
+  font-weight: 900;
+  color: #16a34a;
+  line-height: 1;
+}
+
+.qr-badge-sub {
+  font-size: 6px;
+  font-weight: 900;
+  color: #0f172a;
+  letter-spacing: 0.05em;
+  line-height: 1;
+  margin-top: 1px;
+}
+
+.rcpt-qr-footer-name {
+  font-size: 8.5pt;
+  font-weight: 700;
+  margin-top: 4px;
 }
 
 /* =====================================================================
@@ -3767,11 +3914,12 @@ input:checked + .f-slider::before { transform: translateX(16px); }
     display: block !important;
     visibility: visible !important;
     width: 80mm !important;
+    max-width: 80mm !important;
     margin: 0 auto !important;
     padding: 3mm !important;
     background: #ffffff !important;
     color: #000000 !important;
-    font-family: 'Courier New', Courier, monospace !important;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif !important;
     font-size: 8.5pt !important;
     box-sizing: border-box !important;
   }
@@ -3779,6 +3927,7 @@ input:checked + .f-slider::before { transform: translateX(16px); }
   .thermal-receipt.compact-58mm,
   .thermal-receipt.size-58mm {
     width: 58mm !important;
+    max-width: 58mm !important;
     font-size: 7.5pt !important;
     padding: 2mm !important;
   }
@@ -3816,32 +3965,34 @@ input:checked + .f-slider::before { transform: translateX(16px); }
   }
 
   .rcpt-dashed-line {
-    border-top: 1px dashed #000000 !important;
+    border-top: 1.5px dashed #000000 !important;
     visibility: visible !important;
+    margin: 6px 0 !important;
   }
 
   .rcpt-solid-line {
-    border-top: 1px solid #000000 !important;
-    visibility: visible !important;
-  }
-
-  .rcpt-meta-grid {
-    display: grid !important;
-    grid-template-columns: 1fr 1fr !important;
-    visibility: visible !important;
-  }
-
-  .rcpt-totals-grid {
-    display: flex !important;
-    justify-content: space-between !important;
-    visibility: visible !important;
-  }
-
-  .rcpt-grand-total {
-    display: flex !important;
-    justify-content: space-between !important;
     border-top: 1.5px solid #000000 !important;
-    border-bottom: 1.5px solid #000000 !important;
+    visibility: visible !important;
+    margin: 5px 0 !important;
+  }
+
+  .rcpt-meta-row {
+    display: flex !important;
+    justify-content: space-between !important;
+    visibility: visible !important;
+  }
+
+  .rcpt-totals-section {
+    display: flex !important;
+    justify-content: space-between !important;
+    visibility: visible !important;
+  }
+
+  .rcpt-payment-badge {
+    background: #000000 !important;
+    color: #ffffff !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
     visibility: visible !important;
   }
 
@@ -3849,13 +4000,13 @@ input:checked + .f-slider::before { transform: translateX(16px); }
     visibility: visible !important;
   }
 
-  .rcpt-qr-code-box canvas {
+  .rcpt-qr-canvas {
     margin: 4px auto !important;
     display: block !important;
     visibility: visible !important;
   }
 
-  .rcpt-cut-mark {
+  .rcpt-qr-center-badge {
     visibility: visible !important;
   }
 }

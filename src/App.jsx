@@ -56,9 +56,17 @@ const INITIAL_USERS = [
 ];
 
 export default function App() {
-  // Check if viewing customer mobile verification certificate
+  // Check if viewing customer mobile verification certificate (Bill QR scan)
   const urlParams = new URLSearchParams(window.location.search);
-  const isVerifyMode = urlParams.has('verify') || urlParams.has('verifyData') || urlParams.has('inv');
+  const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+  const isVerifyMode = 
+    urlParams.has('verify') || 
+    urlParams.has('verifyData') || 
+    urlParams.has('inv') ||
+    hashParams.has('verify') ||
+    hashParams.has('verifyData') ||
+    hashParams.has('inv') ||
+    window.location.pathname.includes('/verify');
 
   // Authentication State
   const [currentUser, setCurrentUser] = useState(() => {
@@ -659,7 +667,12 @@ export default function App() {
     localStorage.setItem('armart_logged_user', JSON.stringify(user));
   };
 
-  // If Lock Screen is active
+  // 1. If customer scanned QR code on bill or is viewing verification certificate -> OPEN DIRECTLY (NO LOGIN)
+  if (isVerifyMode) {
+    return <CustomerVerifyView />;
+  }
+
+  // 2. If POS Terminal Lock Screen is active (requires cashier PIN)
   if (isLocked) {
     return (
       <LoginScreen 
@@ -667,11 +680,6 @@ export default function App() {
         availableUsers={availableUsers}
       />
     );
-  }
-
-  // If customer is viewing verification certificate directly on mobile
-  if (urlParams.has('verify') || urlParams.has('verifyData') || urlParams.has('inv')) {
-    return <CustomerVerifyView />;
   }
 
   return (
