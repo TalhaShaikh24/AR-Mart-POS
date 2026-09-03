@@ -1,0 +1,360 @@
+/* =========================================================
+   MOBILE CUSTOMER RECEIPT VERIFICATION CERTIFICATE STYLING
+   ========================================================= */
+
+:root {
+  --primary: #27ae60;
+  --primary-dark: #1e824c;
+  --primary-light: #ecfdf5;
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --border: #e2e8f0;
+  --radius: 16px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: #f1f5f9;
+  color: var(--text-main);
+  line-height: 1.4;
+  padding: 1rem 0.5rem;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.verify-page {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.verify-card {
+  background: #ffffff;
+  border-radius: var(--radius);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.verify-header {
+  padding: 1.5rem 1.25rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+  border-bottom: 1px solid var(--border);
+}
+
+.verify-logo {
+  height: 44px;
+  margin-bottom: 1rem;
+}
+
+.verified-status-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--primary-light);
+  border: 1.5px solid #a7f3d0;
+  border-radius: 12px;
+  padding: 10px 14px;
+  width: 100%;
+  text-align: left;
+}
+
+.verified-icon {
+  width: 38px;
+  height: 38px;
+  background: var(--primary);
+  color: #ffffff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 6px -1px rgba(39, 174, 96, 0.3);
+}
+
+.verified-icon svg {
+  width: 22px;
+  height: 22px;
+}
+
+.status-title {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #065f46;
+}
+
+.status-subtitle {
+  font-size: 0.75rem;
+  color: #047857;
+  font-weight: 500;
+}
+
+.receipt-body {
+  padding: 1.25rem;
+}
+
+.meta-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px dashed var(--border);
+  margin-bottom: 0.85rem;
+}
+
+.meta-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--text-muted);
+  display: block;
+}
+
+.meta-val {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.meta-val.highlight {
+  color: var(--primary-dark);
+}
+
+.text-right {
+  text-align: right;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.store-details-box {
+  background: #f8fafc;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.75rem;
+  font-size: 0.8rem;
+  margin-bottom: 1rem;
+}
+
+.store-name-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.store-name-row strong {
+  font-size: 0.95rem;
+  color: var(--text-main);
+}
+
+.fssai-tag {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  background: #ffffff;
+  border: 1px solid var(--border);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.store-addr-line {
+  color: var(--text-muted);
+  margin-bottom: 2px;
+}
+
+.store-contact-line {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.customer-info-bar {
+  font-size: 0.82rem;
+  background: #f1f5f9;
+  padding: 6px 10px;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+}
+
+.items-table-wrapper {
+  margin-bottom: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.verify-items-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+}
+
+.verify-items-table th {
+  background: #f8fafc;
+  padding: 8px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+.verify-items-table td {
+  padding: 8px;
+  border-bottom: 1px solid #f8fafc;
+}
+
+.verify-items-table td:first-child {
+  color: var(--text-muted);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+}
+
+.item-title {
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.item-unit-tag {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+.verify-totals {
+  background: #f8fafc;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-bottom: 1rem;
+}
+
+.totals-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.totals-row span:last-child {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.discount-text {
+  color: #16a34a !important;
+}
+
+.totals-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 0.2rem 0;
+}
+
+.totals-grand-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--text-main);
+  padding-top: 2px;
+}
+
+.grand-amt {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.35rem;
+  font-weight: 900;
+  color: var(--primary-dark);
+}
+
+.security-seal {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.seal-icon {
+  font-size: 1.5rem;
+}
+
+.seal-text strong {
+  display: block;
+  color: #1e40af;
+}
+
+.seal-text span {
+  color: #3b82f6;
+}
+
+.verify-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn-print-copy {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--text-main);
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.btn-print-copy:hover {
+  opacity: 0.9;
+}
+
+.verify-footer {
+  text-align: center;
+  padding: 1rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  border-top: 1px solid var(--border);
+  background: #fafafa;
+}
+
+@media print {
+  body {
+    background: #ffffff;
+    padding: 0;
+  }
+  .verify-card {
+    box-shadow: none;
+    border: none;
+  }
+  .verify-actions {
+    display: none;
+  }
+}

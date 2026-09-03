@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AR Mart - Official Receipt Verification</title>
+  <meta name="description" content="Official AR Mart Digital Receipt Authenticity Verification">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="verify.css">
+</head>
+<body>
+  <div class="verify-page">
+    <div class="verify-card">
+      <!-- HEADER & BRAND -->
+      <div class="verify-header">
+        <svg class="verify-logo" viewBox="0 0 320 80" xmlns="http://www.w3.org/2000/svg">
+          <g transform="translate(10, 10)">
+            <path d="M15 14 C12 6, 22 2, 28 8 C30 14, 22 18, 15 14 Z" fill="#48bb78" />
+            <path d="M30 12 C30 3, 44 2, 45 10 C46 16, 36 17, 30 12 Z" fill="#38a169" />
+            <path d="M46 14 C48 7, 58 8, 57 14 C56 19, 48 18, 46 14 Z" fill="#48bb78" />
+            <path d="M8 20 L20 20 L28 44 L58 44 L66 24 L22 24" fill="none" stroke="#1e293b" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+            <line x1="28" y1="31" x2="62" y2="31" stroke="#1e293b" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="33" y1="38" x2="57" y2="38" stroke="#1e293b" stroke-width="2.5" stroke-linecap="round"/>
+            <circle cx="32" cy="52" r="4.5" fill="#1e293b"/>
+            <circle cx="54" cy="52" r="4.5" fill="#1e293b"/>
+          </g>
+          <text x="88" y="44" font-family="'Outfit', sans-serif" font-weight="800" font-size="34" fill="#2f855a">AR</text>
+          <text x="144" y="44" font-family="'Outfit', sans-serif" font-weight="800" font-size="34" fill="#1e293b">MART</text>
+          <text x="89" y="59" font-family="'Outfit', sans-serif" font-weight="600" font-size="9" fill="#64748b" letter-spacing="3.5">QUALITY | TRUST | VALUE</text>
+        </svg>
+
+        <div class="verified-status-banner" id="statusBanner">
+          <div class="verified-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div>
+            <h2 class="status-title">Official Receipt Verified</h2>
+            <p class="status-subtitle">Authentic store purchase issued by AR Mart</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- INVOICE ESSENTIAL DETAILS -->
+      <div class="receipt-body">
+        <div class="meta-section">
+          <div class="meta-block">
+            <span class="meta-label">Invoice Number</span>
+            <span class="meta-val highlight" id="invNo">ARM/2025/05/26/001</span>
+          </div>
+          <div class="meta-block text-right">
+            <span class="meta-label">Date & Time</span>
+            <span class="meta-val" id="invDateTime">26/05/2025 • 01:35 PM</span>
+          </div>
+        </div>
+
+        <div class="store-details-box">
+          <div class="store-name-row">
+            <strong id="storeName">AR Mart</strong>
+            <span class="fssai-tag">FSSAI: <span id="storeFssai">21026252000118</span></span>
+          </div>
+          <div class="store-addr-line" id="storeAddr">Braripora Handwara J&K-193221</div>
+          <div class="store-contact-line">Support: <strong>01955317530</strong> | WhatsApp: <strong>9682329952</strong></div>
+        </div>
+
+        <div class="customer-info-bar" id="customerInfoBar" style="display:none;">
+          <span>Billed to: <strong id="custNameVal"></strong> <span id="custPhoneVal"></span></span>
+        </div>
+
+        <!-- ITEMS BREAKDOWN TABLE -->
+        <div class="items-table-wrapper">
+          <table class="verify-items-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Item Description</th>
+                <th class="text-center">Qty</th>
+                <th class="text-right">Rate</th>
+                <th class="text-right">Amount</th>
+              </tr>
+            </thead>
+            <tbody id="verifyItemsBody">
+              <!-- Populated dynamically -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- TOTALS SUMMARY -->
+        <div class="verify-totals">
+          <div class="totals-row">
+            <span>Sub Total</span>
+            <span id="vSubTotal">₹0.00</span>
+          </div>
+          <div class="totals-row" id="rowDiscount" style="display:none;">
+            <span>Discount Applied</span>
+            <span class="discount-text" id="vDiscount">-₹0.00</span>
+          </div>
+          <div class="totals-row">
+            <span>Tax (GST 0%)</span>
+            <span id="vTax">₹0.00</span>
+          </div>
+          <div class="totals-divider"></div>
+          <div class="totals-grand-row">
+            <span>Total Paid</span>
+            <span class="grand-amt" id="vGrandTotal">₹0.00</span>
+          </div>
+        </div>
+
+        <!-- DIGITAL SEAL & SECURITY BADGE -->
+        <div class="security-seal">
+          <div class="seal-icon">🛡️</div>
+          <div class="seal-text">
+            <strong>Digitally Signed & Authenticated</strong>
+            <span>This is an official customer copy from AR Mart Point of Sale.</span>
+          </div>
+        </div>
+
+        <!-- ACTIONS -->
+        <div class="verify-actions">
+          <button class="btn-print-copy" onclick="window.print()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+            Save / Print Digital Copy
+          </button>
+        </div>
+      </div>
+
+      <div class="verify-footer">
+        <p>Thank you for shopping with AR Mart • Handwara</p>
+      </div>
+    </div>
+  </div>
+
+  <script src="verify.js"></script>
+</body>
+</html>
