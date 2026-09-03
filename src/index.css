@@ -2444,6 +2444,159 @@ input:checked + .f-slider::before { transform: translateX(16px); }
   margin-bottom: 0.75rem;
 }
 
+/* ─── QUICK INLINE CUSTOM PRODUCT ROW ─── */
+.f-inline-add-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  background: var(--bg-subtle);
+  border-bottom: 1.5px solid var(--border);
+  padding: 8px 14px;
+  flex-wrap: wrap;
+  transition: background 0.2s ease;
+}
+
+.inline-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.inline-field-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.inline-input-name,
+.inline-select-cat,
+.inline-select-unit,
+.inline-input-num {
+  height: 36px;
+  border-radius: var(--r-md);
+  border: 1.5px solid var(--border-md);
+  background: var(--surface);
+  padding: 0 8px;
+  font-size: 0.82rem;
+  color: var(--text-primary);
+  outline: none;
+  transition: all 0.15s ease;
+}
+
+.inline-input-name:focus,
+.inline-select-cat:focus,
+.inline-select-unit:focus,
+.inline-input-num:focus {
+  border-color: var(--brand-green);
+  box-shadow: 0 0 0 2px var(--brand-green-subtle);
+}
+
+.inline-name-col {
+  flex: 2;
+  min-width: 140px;
+}
+
+.inline-cat-col {
+  flex: 1.2;
+  min-width: 110px;
+}
+
+.inline-unit-col {
+  width: 90px;
+}
+
+.inline-num-col {
+  width: 78px;
+}
+
+.inline-rate-input {
+  font-weight: 800;
+  border-color: var(--brand-green);
+  color: var(--brand-green-dark);
+}
+
+.inline-qty-col {
+  width: 90px;
+}
+
+.inline-qty-pill {
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--surface);
+  border: 1.5px solid var(--border-md);
+  border-radius: var(--r-md);
+  padding: 0 4px;
+}
+
+.inline-qty-pill button {
+  width: 24px;
+  height: 24px;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-weight: 800;
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.inline-qty-pill span {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 800;
+  font-size: 0.85rem;
+  padding: 0 4px;
+}
+
+.inline-add-btn {
+  height: 36px;
+  padding: 0 14px;
+  background: var(--brand-green);
+  color: #ffffff;
+  border: none;
+  border-radius: var(--r-md);
+  font-weight: 800;
+  font-size: 0.82rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.inline-add-btn:hover {
+  background: var(--brand-green-dark);
+}
+
+.inline-more-btn {
+  height: 36px;
+  padding: 0 10px;
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1.5px solid var(--border-md);
+  border-radius: var(--r-md);
+  font-weight: 700;
+  font-size: 0.76rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.inline-more-btn:hover {
+  background: var(--surface);
+  color: var(--brand-green-dark);
+  border-color: var(--brand-green);
+}
+
 /* ─── CALCULATOR POPUP ─── */
 .calc-body {
   display: flex;
@@ -3002,32 +3155,53 @@ input:checked + .f-slider::before { transform: translateX(16px); }
 
   /* Inline Custom Item Add Row */
   .f-inline-add-row {
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    padding: 8px 10px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px 6px;
+    padding: 10px 8px;
   }
 
-  .inline-input-name {
+  .inline-name-col {
     grid-column: 1 / -1;
     width: 100%;
   }
 
-  .inline-input-price,
-  .inline-qty-pill {
+  .inline-cat-col {
+    grid-column: 1 / 3;
+    width: 100%;
+  }
+
+  .inline-unit-col {
+    grid-column: 3 / 5;
+    width: 100%;
+  }
+
+  .inline-num-col {
+    width: 100%;
+  }
+
+  .inline-qty-col {
+    grid-column: 4 / 5;
     width: 100%;
   }
 
   .inline-add-btn {
-    grid-column: 1 / -1;
+    grid-column: 1 / 3;
     width: 100%;
     justify-content: center;
   }
 
-  /* Modals */
+  .inline-more-btn {
+    grid-column: 3 / 5;
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Modals & Dialogs */
   .react-modal-overlay,
   .modal-overlay {
-    padding: 0.75rem;
-    align-items: flex-end; /* Sheet style on mobile */
+    padding: 0.5rem;
+    align-items: flex-end; /* Bottom sheet on mobile */
   }
 
   .react-modal-dialog,
@@ -3038,20 +3212,61 @@ input:checked + .f-slider::before { transform: translateX(16px); }
     width: 100%;
   }
 
-  .react-modal-header {
-    padding: 1rem 1.25rem;
+  .products-modal-dialog {
+    max-width: 98vw !important;
+    width: 100% !important;
+    max-height: 94vh !important;
   }
 
-  .react-modal-body {
-    padding: 1rem 1.25rem;
-  }
-
-  .form-field-grid {
-    grid-template-columns: 1fr;
-    gap: 10px;
+  .p-form-card,
+  .products-form-card {
+    padding: 10px !important;
   }
 
   .p-form-grid {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 8px !important;
+  }
+
+  .p-form-grid .form-field:first-child {
+    grid-column: 1 / -1 !important;
+  }
+
+  .table-responsive-box {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    display: block !important;
+    width: 100% !important;
+    border: 1px solid var(--border) !important;
+    border-radius: var(--r-md) !important;
+    margin-top: 8px;
+  }
+
+  .app-table {
+    min-width: 560px !important;
+    width: 100% !important;
+  }
+
+  .catalog-drawer-dialog {
+    max-height: 90vh !important;
+    width: 100% !important;
+  }
+
+  .catalog-drawer-dialog .react-modal-body {
+    height: auto !important;
+    max-height: 75vh !important;
+  }
+
+  .react-modal-header {
+    padding: 0.85rem 1rem;
+  }
+
+  .react-modal-body {
+    padding: 0.85rem 1rem;
+  }
+
+  .form-field-grid {
     grid-template-columns: 1fr;
     gap: 10px;
   }
@@ -3066,6 +3281,39 @@ input:checked + .f-slider::before { transform: translateX(16px); }
 @media (max-width: 600px) {
   body {
     font-size: 13px;
+  }
+
+  .fidelity-header {
+    padding: 6px 10px;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .f-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+    justify-content: flex-start;
+    padding-bottom: 3px;
+  }
+
+  .f-text-btn {
+    flex-shrink: 0;
+    min-width: 36px;
+    height: 36px;
+    padding: 0 6px;
+  }
+
+  .f-theme-toggle {
+    flex-shrink: 0;
+  }
+
+  .f-user-pill {
+    flex-shrink: 0;
+    margin-left: auto;
   }
 
   .fidelity-container {

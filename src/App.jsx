@@ -103,9 +103,13 @@ export default function App() {
   const [roundoffEnabled, setRoundoffEnabled] = useState(true);
   const [paymentMethod, setPaymentMethod] = useState('Cash'); // 'Cash' | 'Card' | 'Scan'
 
-  // Inline Quick Add Row state
+  // Inline Quick Add Custom Product Row state (Unit, MRP, Category, Discount)
   const [inlineName, setInlineName] = useState('');
+  const [inlineCategory, setInlineCategory] = useState('General');
+  const [inlineUnit, setInlineUnit] = useState('1 KG');
+  const [inlineMrp, setInlineMrp] = useState('');
   const [inlinePrice, setInlinePrice] = useState('');
+  const [inlineDiscount, setInlineDiscount] = useState('');
   const [inlineQty, setInlineQty] = useState(1);
 
   // Modals
@@ -270,26 +274,65 @@ export default function App() {
     generateInvoiceSequence();
   };
 
-  // Inline Quick Add Custom Product
+  // Inline Quick Add Custom Product Handlers
+  const handleInlineMrpChange = (val) => {
+    setInlineMrp(val);
+    const m = parseFloat(val);
+    if (!isNaN(m) && m > 0) {
+      const d = parseFloat(inlineDiscount);
+      if (!isNaN(d) && d > 0) {
+        setInlinePrice(Math.max(0, m - d).toFixed(2));
+      } else if (!inlinePrice) {
+        setInlinePrice(val);
+      }
+    }
+  };
+
+  const handleInlinePriceChange = (val) => {
+    setInlinePrice(val);
+    const r = parseFloat(val);
+    const m = parseFloat(inlineMrp);
+    if (!isNaN(m) && !isNaN(r) && m >= r) {
+      setInlineDiscount((m - r).toFixed(2));
+    }
+  };
+
+  const handleInlineDiscountChange = (val) => {
+    setInlineDiscount(val);
+    const d = parseFloat(val);
+    const m = parseFloat(inlineMrp);
+    if (!isNaN(m) && m > 0 && !isNaN(d) && d >= 0) {
+      setInlinePrice(Math.max(0, m - d).toFixed(2));
+    }
+  };
+
   const handleInlineAdd = (e) => {
     e.preventDefault();
     const rateNum = parseFloat(inlinePrice);
-    if (!inlineName.trim() || isNaN(rateNum) || rateNum <= 0) return;
+    const mrpNum = parseFloat(inlineMrp) || rateNum;
+    const discNum = parseFloat(inlineDiscount) || Math.max(0, mrpNum - rateNum);
+    if (!inlineName.trim() || isNaN(rateNum) || rateNum <= 0) {
+      alert('Please enter an Item Description and a valid Rate.');
+      return;
+    }
 
     addToCart({
       id: `CUSTOM_${Date.now()}`,
       name: inlineName.trim(),
-      category: 'General',
-      unit: '1 PCS',
-      mrp: rateNum,
+      category: inlineCategory || 'General',
+      unit: inlineUnit || '1 KG',
+      mrp: mrpNum,
       rate: rateNum,
+      discount: discNum,
       tax: 0,
       stock: 100,
       sku: `CUSTOM-${Date.now().toString().slice(-6)}`
     }, inlineQty);
 
     setInlineName('');
+    setInlineMrp('');
     setInlinePrice('');
+    setInlineDiscount('');
     setInlineQty(1);
   };
 
@@ -829,30 +872,115 @@ export default function App() {
               <div className="th-col th-action">Action</div>
             </div>
 
-            {/* Quick Inline "Add a Custom Product Name" Row */}
+            {/* Quick Inline "Add a Custom Product" Row (Unit, MRP, Category, Discount) */}
             <form className="f-inline-add-row" onSubmit={handleInlineAdd}>
-              <input 
-                type="text" 
-                placeholder="Add a Custom Product Name..." 
-                className="inline-input-name"
-                value={inlineName}
-                onChange={e => setInlineName(e.target.value)}
-              />
-              <input 
-                type="number" 
-                placeholder="Enter Price" 
-                step="0.5"
-                className="inline-input-price"
-                value={inlinePrice}
-                onChange={e => setInlinePrice(e.target.value)}
-              />
-              <div className="inline-qty-pill">
-                <button type="button" onClick={() => setInlineQty(Math.max(1, inlineQty - 1))}>-</button>
-                <span>{inlineQty}</span>
-                <button type="button" onClick={() => setInlineQty(inlineQty + 1)}>+</button>
+              <div className="inline-field-group inline-name-col">
+                <span className="inline-field-label">Custom Item</span>
+                <input 
+                  type="text" 
+                  placeholder="e.g. Fresh Paneer, Loose Rice" 
+                  className="inline-input-name"
+                  value={inlineName}
+                  onChange={e => setInlineName(e.target.value)}
+                  required
+                />
               </div>
-              <button type="submit" className="inline-add-btn">
-                <Plus size={16} /> Add
+
+              <div className="inline-field-group inline-cat-col">
+                <span className="inline-field-label">Category</span>
+                <select 
+                  className="inline-select-cat"
+                  value={inlineCategory}
+                  onChange={e => setInlineCategory(e.target.value)}
+                >
+                  <option value="General">General</option>
+                  <option value="Grains & Flours">Grains & Flours</option>
+                  <option value="Oils & Ghee">Oils & Ghee</option>
+                  <option value="Spices & Salt">Spices & Salt</option>
+                  <option value="Dairy & Beverages">Dairy & Beverages</option>
+                  <option value="Snacks & Bakery">Snacks & Bakery</option>
+                  <option value="Fruits & Fresh">Fruits & Fresh</option>
+                  <option value="Dry Fruits">Dry Fruits</option>
+                  <option value="Personal Care">Personal Care</option>
+                </select>
+              </div>
+
+              <div className="inline-field-group inline-unit-col">
+                <span className="inline-field-label">Unit</span>
+                <select 
+                  className="inline-select-unit"
+                  value={inlineUnit}
+                  onChange={e => setInlineUnit(e.target.value)}
+                >
+                  <option value="1 KG">1 KG</option>
+                  <option value="500 g">500 g</option>
+                  <option value="250 g">250 g</option>
+                  <option value="100 g">100 g</option>
+                  <option value="1 PCS">1 PCS</option>
+                  <option value="1 L">1 L</option>
+                  <option value="500 ml">500 ml</option>
+                  <option value="Pack">Pack</option>
+                  <option value="Dozen">Dozen</option>
+                </select>
+              </div>
+
+              <div className="inline-field-group inline-num-col">
+                <span className="inline-field-label">MRP (₹)</span>
+                <input 
+                  type="number" 
+                  placeholder="MRP" 
+                  step="0.5"
+                  className="inline-input-num"
+                  value={inlineMrp}
+                  onChange={e => handleInlineMrpChange(e.target.value)}
+                />
+              </div>
+
+              <div className="inline-field-group inline-num-col">
+                <span className="inline-field-label">Rate (₹)*</span>
+                <input 
+                  type="number" 
+                  placeholder="Rate" 
+                  step="0.5"
+                  className="inline-input-num inline-rate-input"
+                  value={inlinePrice}
+                  onChange={e => handleInlinePriceChange(e.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="inline-field-group inline-num-col">
+                <span className="inline-field-label">Disc (₹)</span>
+                <input 
+                  type="number" 
+                  placeholder="Disc" 
+                  step="0.5"
+                  className="inline-input-num"
+                  value={inlineDiscount}
+                  onChange={e => handleInlineDiscountChange(e.target.value)}
+                />
+              </div>
+
+              <div className="inline-field-group inline-qty-col">
+                <span className="inline-field-label">Qty</span>
+                <div className="inline-qty-pill">
+                  <button type="button" onClick={() => setInlineQty(Math.max(1, inlineQty - 1))}>-</button>
+                  <span>{inlineQty}</span>
+                  <button type="button" onClick={() => setInlineQty(inlineQty + 1)}>+</button>
+                </div>
+              </div>
+
+              <button type="submit" className="inline-add-btn" title="Add Custom Item to Cart">
+                <Plus size={15} /> <span>Add</span>
+              </button>
+
+              <button 
+                type="button" 
+                className="inline-more-btn" 
+                onClick={() => setShowCustomItem(true)} 
+                title="Open Detailed Custom Product Modal"
+              >
+                Full Form
               </button>
             </form>
 
