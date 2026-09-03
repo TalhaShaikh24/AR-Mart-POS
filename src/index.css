@@ -796,96 +796,6 @@ body {
   text-align: right;
 }
 
-/* Inline Custom Item Row */
-.f-inline-add-row {
-  display: grid;
-  grid-template-columns: 2.4fr 1.1fr 1.3fr auto;
-  gap: 10px;
-  background: var(--bg-subtle);
-  padding: 10px 12px;
-  border-radius: var(--r-lg);
-  border: 1.5px dashed var(--brand-blue-border);
-  margin-bottom: 12px;
-  align-items: center;
-}
-
-.inline-input-name,
-.inline-input-price {
-  height: 40px;
-  padding: 0 12px;
-  border: 1.5px solid var(--border-md);
-  border-radius: var(--r-md);
-  font-size: 0.85rem;
-  font-weight: 600;
-  outline: none;
-  background: var(--surface);
-  color: var(--text-primary);
-  font-family: inherit;
-}
-
-.inline-input-name:focus,
-.inline-input-price:focus {
-  border-color: var(--brand-blue);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
-}
-
-.inline-qty-pill {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: var(--surface);
-  border: 1.5px solid var(--border-md);
-  border-radius: var(--r-md);
-  height: 40px;
-  padding: 0 6px;
-}
-
-.inline-qty-pill button {
-  width: 26px;
-  height: 26px;
-  background: var(--bg-subtle);
-  border: 1px solid var(--border);
-  border-radius: var(--r-xs);
-  cursor: pointer;
-  font-weight: 800;
-  font-size: 14px;
-  color: var(--text-primary);
-  transition: all 0.15s;
-}
-
-.inline-qty-pill button:hover {
-  background: var(--brand-green-subtle);
-  color: var(--brand-green);
-}
-
-.inline-qty-pill span {
-  font-family: 'JetBrains Mono', monospace;
-  font-weight: 800;
-  font-size: 0.88rem;
-}
-
-.inline-add-btn {
-  height: 40px;
-  padding: 0 16px;
-  background: var(--brand-green);
-  color: #fff;
-  border: none;
-  border-radius: var(--r-md);
-  font-weight: 800;
-  font-size: 0.82rem;
-  font-family: inherit;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  box-shadow: var(--shadow-green-sm);
-  transition: all 0.18s ease;
-}
-
-.inline-add-btn:hover {
-  background: var(--brand-green-dark);
-}
-
 /* Order Rows */
 .f-order-items-list {
   display: flex;
@@ -2468,9 +2378,15 @@ input:checked + .f-slider::before { transform: translateX(16px); }
   align-items: flex-end;
   gap: 8px;
   background: var(--bg-subtle);
-  border-bottom: 1.5px solid var(--border);
-  padding: 8px 14px;
+  border: 1.5px dashed var(--brand-blue-border);
+  border-radius: var(--r-lg);
+  padding: 10px 14px;
+  margin-bottom: 12px;
   flex-wrap: wrap;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box !important;
+  overflow: hidden;
   transition: background 0.2s ease;
 }
 
@@ -2478,6 +2394,8 @@ input:checked + .f-slider::before { transform: translateX(16px); }
   display: flex;
   flex-direction: column;
   gap: 3px;
+  box-sizing: border-box !important;
+  min-width: 0 !important;
 }
 
 .inline-field-label {
@@ -2492,14 +2410,18 @@ input:checked + .f-slider::before { transform: translateX(16px); }
 .inline-select-cat,
 .inline-select-unit,
 .inline-input-num {
-  height: 36px;
+  height: 38px;
   border-radius: var(--r-md);
   border: 1.5px solid var(--border-md);
   background: var(--surface);
-  padding: 0 8px;
+  padding: 0 10px;
   font-size: 0.82rem;
   color: var(--text-primary);
   outline: none;
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  min-width: 0 !important;
   transition: all 0.15s ease;
 }
 
@@ -2514,19 +2436,23 @@ input:checked + .f-slider::before { transform: translateX(16px); }
 .inline-name-col {
   flex: 2;
   min-width: 140px;
+  box-sizing: border-box !important;
 }
 
 .inline-cat-col {
   flex: 1.2;
   min-width: 110px;
+  box-sizing: border-box !important;
 }
 
 .inline-unit-col {
   width: 90px;
+  box-sizing: border-box !important;
 }
 
 .inline-num-col {
   width: 78px;
+  box-sizing: border-box !important;
 }
 
 .inline-rate-input {
@@ -2537,10 +2463,15 @@ input:checked + .f-slider::before { transform: translateX(16px); }
 
 .inline-qty-col {
   width: 90px;
+  box-sizing: border-box !important;
 }
 
 .inline-qty-pill {
-  height: 36px;
+  height: 38px;
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  min-width: 0 !important;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -3234,53 +3165,87 @@ input:checked + .f-slider::before { transform: translateX(16px); }
   /* Inline Custom Product Row Mobile Styling */
   .f-inline-add-row {
     display: grid !important;
-    grid-template-columns: 1fr 1fr !important;
-    gap: 8px 6px !important;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+    gap: 8px !important;
     padding: 10px !important;
     background: var(--bg-subtle) !important;
-    border: 1.5px solid var(--border-md) !important;
+    border: 1.5px dashed var(--brand-blue-border) !important;
     border-radius: var(--r-lg) !important;
     width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+  }
+
+  .inline-field-group {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
     box-sizing: border-box !important;
   }
 
   .inline-name-col {
     grid-column: 1 / -1 !important;
     width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
   }
 
   .inline-cat-col {
     grid-column: 1 / 2 !important;
     width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
   }
 
   .inline-unit-col {
     grid-column: 2 / 3 !important;
     width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
   }
 
   .inline-num-col {
     width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
   }
 
   .inline-qty-col {
     grid-column: 2 / 3 !important;
     width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+  }
+
+  .inline-input-name,
+  .inline-select-cat,
+  .inline-select-unit,
+  .inline-input-num,
+  .inline-qty-pill {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
   }
 
   .inline-add-btn {
     grid-column: 1 / -1 !important;
     width: 100% !important;
+    max-width: 100% !important;
     height: 42px !important;
     justify-content: center !important;
     font-size: 0.90rem !important;
+    box-sizing: border-box !important;
   }
 
   .inline-more-btn {
     grid-column: 1 / -1 !important;
     width: 100% !important;
+    max-width: 100% !important;
     height: 34px !important;
     justify-content: center !important;
+    box-sizing: border-box !important;
   }
 
   /* Modals & Dialogs */
