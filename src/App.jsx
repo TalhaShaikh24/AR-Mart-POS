@@ -14,6 +14,7 @@ import VerifySearchModal from './components/VerifySearchModal';
 import ShortcutsModal from './components/ShortcutsModal';
 import CustomItemModal from './components/CustomItemModal';
 import ReceiptPreviewModal from './components/ReceiptPreviewModal';
+import SecurityModal from './components/SecurityModal';
 
 import { 
   Search, 
@@ -28,6 +29,7 @@ import {
   SlidersHorizontal,
   Barcode,
   Calculator,
+  KeyRound,
   Keyboard,
   Maximize2,
   Minimize2,
@@ -61,9 +63,8 @@ export default function App() {
     const saved = localStorage.getItem('armart_logged_user');
     return saved ? JSON.parse(saved) : INITIAL_USERS[0];
   });
-  const [isLocked, setIsLocked] = useState(() => {
-    return localStorage.getItem('armart_is_locked') === 'true';
-  });
+  // Terminal Lock State (Always requires PIN on browser launch or reload)
+  const [isLocked, setIsLocked] = useState(true);
   const [availableUsers, setAvailableUsers] = useState(INITIAL_USERS);
 
   // App Theme & Fullscreen
@@ -118,6 +119,7 @@ export default function App() {
   const [showVerifySearch, setShowVerifySearch] = useState(false);
   const [showShortcutsModal, setShowShortcutsModal] = useState(false);
   const [showCustomItem, setShowCustomItem] = useState(false);
+  const [showSecurityModal, setShowSecurityModal] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const [receiptToPrint, setReceiptToPrint] = useState(null);
 
@@ -140,7 +142,10 @@ export default function App() {
       ]);
 
       if (pRes && pRes.ok) setProducts(await pRes.json());
-      if (sRes && sRes.ok) setStoreConfig(prev => ({ ...prev, ...(sRes ? sRes.json : {}) }));
+      if (sRes && sRes.ok) {
+        const sData = await sRes.json();
+        setStoreConfig(prev => ({ ...prev, ...sData }));
+      }
       if (iRes && iRes.ok) setInvoices(await iRes.json());
       if (uRes && uRes.ok) {
         const usersData = await uRes.json();
@@ -564,6 +569,7 @@ export default function App() {
         setShowNewCustomer(false);
         setShowVerifySearch(false);
         setShowCustomItem(false);
+        setShowSecurityModal(false);
         setSearchDropdown([]);
         setActiveSearchIndex(-1);
         return;
@@ -605,7 +611,6 @@ export default function App() {
     setCurrentUser(user);
     setIsLocked(false);
     localStorage.setItem('armart_logged_user', JSON.stringify(user));
-    localStorage.setItem('armart_is_locked', 'false');
   };
 
   // If Lock Screen is active
@@ -681,13 +686,33 @@ export default function App() {
           <button className="f-text-btn" onClick={() => setShowSettings(true)}>
             <Settings size={14} /> <span>Settings</span>
           </button>
+          <button className="f-text-btn" onClick={() => setShowSecurityModal(true)} title="Terminal Security & PIN Reset">
+            <KeyRound size={14} /> <span>Security</span>
+          </button>
 
           {/* Cashier Pill */}
           <div className="f-user-pill">
-            <img src={currentUser.avatar || INITIAL_USERS[0].avatar} alt={currentUser.name} className="f-user-avatar" />
-            <span className="f-user-name">{currentUser.name.split(' ')[0]}</span>
-            <button className="f-logout-btn" onClick={handleLogout} title="Switch Cashier">
-              <LogOut size={14} />
+            <img 
+              src={currentUser.avatar || INITIAL_USERS[0].avatar} 
+              alt={currentUser.name} 
+              className="f-user-avatar" 
+              onClick={() => setShowSecurityModal(true)}
+              style={{ cursor: 'pointer' }}
+              title="Click to Change PIN"
+            />
+            <span 
+              className="f-user-name" 
+              onClick={() => setShowSecurityModal(true)} 
+              style={{ cursor: 'pointer' }} 
+              title="Click to Change PIN"
+            >
+              {currentUser.name.split(' ')[0]} {currentUser.role === 'Admin' ? '★' : ''}
+            </span>
+            <button className="f-logout-btn" onClick={() => setShowSecurityModal(true)} title="Change / Reset PIN">
+              <KeyRound size={13} />
+            </button>
+            <button className="f-logout-btn" onClick={handleLogout} title="Lock Terminal / Switch Cashier">
+              <LogOut size={13} />
             </button>
           </div>
         </div>
@@ -1160,6 +1185,13 @@ export default function App() {
       invoice={receiptToPrint} 
       storeConfig={storeConfig} 
       onPrint={handlePrintFromPreview} 
+    />
+    <SecurityModal 
+      isOpen={showSecurityModal} 
+      onClose={() => setShowSecurityModal(false)} 
+      currentUser={currentUser} 
+      availableUsers={availableUsers} 
+      onPinUpdated={fetchInitialData} 
     />
     </>
   );

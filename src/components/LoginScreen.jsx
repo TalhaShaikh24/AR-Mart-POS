@@ -37,7 +37,7 @@ export default function LoginScreen({ onLogin, availableUsers }) {
       if (fallback) {
         onLogin(fallback);
       } else {
-        setError('Incorrect PIN. Try 1234, 0000 or 9999');
+        setError('Incorrect PIN. Please try again.');
         setPin('');
       }
     } finally {

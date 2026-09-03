@@ -189,16 +189,16 @@ async function seedMongoDatabase() {
       await Product.insertMany(memoryStore.products);
     }
     
-    // Explicitly create / update all 3 Cashier users in MongoDB
-    console.log('Ensuring 3 Cashier/Admin Users exist in MongoDB database...');
+    // Explicitly seed default users only if they do not already exist (preserves customized PINs)
+    console.log('Checking Cashier/Admin Users in MongoDB database...');
     for (const u of DEFAULT_USERS) {
       await User.findOneAndUpdate(
         { username: u.username },
-        { $set: u },
+        { $setOnInsert: u },
         { upsert: true, returnDocument: 'after' }
       );
     }
-    console.log(' Successfully seeded 3 Users in MongoDB: zahid, aamir, admin');
+    console.log(' Verified Cashier/Admin Users in MongoDB (zahid, aamir, admin)');
 
     const settingsCount = await Setting.countDocuments();
     if (settingsCount === 0) {
@@ -253,6 +253,84 @@ app.get('/api/users', async (req, res) => {
     res.json(memoryStore.users.map(u => ({ username: u.username, name: u.name, role: u.role, avatar: u.avatar })));
   } catch (err) {
     res.json(memoryStore.users);
+  }
+});
+
+// Self Change PIN (Cashier or Admin changing their own PIN)
+app.post('/api/users/change-pin', async (req, res) => {
+  try {
+    const { username, currentPin, newPin } = req.body;
+    if (!username || !currentPin || !newPin) {
+      return res.status(400).json({ success: false, message: 'All fields are required.' });
+    }
+    if (!/^\d{4,6}$/.test(newPin)) {
+      return res.status(400).json({ success: false, message: 'New PIN must be 4 to 6 numeric digits.' });
+    }
+
+    let user = null;
+    if (isMongoConnected) {
+      user = await User.findOne({ username, pin: currentPin });
+      if (!user) {
+        return res.status(401).json({ success: false, message: 'Current PIN is incorrect.' });
+      }
+      user.pin = newPin;
+      await user.save();
+    } else {
+      user = memoryStore.users.find(u => u.username === username && u.pin === currentPin);
+      if (!user) {
+        return res.status(401).json({ success: false, message: 'Current PIN is incorrect.' });
+      }
+      user.pin = newPin;
+    }
+
+    res.json({ success: true, message: 'PIN updated successfully!' });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// Admin Reset PIN (Admin resetting any cashier's PIN)
+app.post('/api/users/admin-reset-pin', async (req, res) => {
+  try {
+    const { adminUsername, adminPin, targetUsername, newPin } = req.body;
+    if (!adminUsername || !adminPin || !targetUsername || !newPin) {
+      return res.status(400).json({ success: false, message: 'All fields are required.' });
+    }
+    if (!/^\d{4,6}$/.test(newPin)) {
+      return res.status(400).json({ success: false, message: 'New PIN must be 4 to 6 numeric digits.' });
+    }
+
+    // Verify Admin Credentials
+    let adminUser = null;
+    if (isMongoConnected) {
+      adminUser = await User.findOne({ username: adminUsername, pin: adminPin, role: 'Admin' });
+    } else {
+      adminUser = memoryStore.users.find(u => u.username === adminUsername && u.pin === adminPin && u.role === 'Admin');
+    }
+
+    if (!adminUser) {
+      return res.status(403).json({ success: false, message: 'Admin authentication failed. Invalid Admin username or PIN.' });
+    }
+
+    // Reset Target User's PIN
+    if (isMongoConnected) {
+      const target = await User.findOne({ username: targetUsername });
+      if (!target) {
+        return res.status(404).json({ success: false, message: 'Target user not found.' });
+      }
+      target.pin = newPin;
+      await target.save();
+    } else {
+      const target = memoryStore.users.find(u => u.username === targetUsername);
+      if (!target) {
+        return res.status(404).json({ success: false, message: 'Target user not found.' });
+      }
+      target.pin = newPin;
+    }
+
+    res.json({ success: true, message: `PIN for user "${targetUsername}" has been reset successfully to ${newPin}!` });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
   }
 });
 

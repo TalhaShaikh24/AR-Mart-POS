@@ -2334,6 +2334,116 @@ input:checked + .f-slider::before { transform: translateX(16px); }
   color: var(--brand-green-dark);
 }
 
+/* ─── SECURITY & PIN MODAL ─── */
+.security-tabs-header {
+  display: flex;
+  background: var(--bg-subtle);
+  border-bottom: 1.5px solid var(--border);
+  padding: 6px 12px 0;
+  gap: 8px;
+}
+
+.sec-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  padding: 8px 14px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  border-bottom: 2.5px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.sec-tab-btn.active {
+  color: var(--brand-green-dark);
+  border-bottom-color: var(--brand-green);
+  background: var(--surface);
+  border-radius: var(--r-md) var(--r-md) 0 0;
+}
+
+.sec-user-badge {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg-subtle);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.sec-user-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--brand-green);
+}
+
+.sec-user-role {
+  display: block;
+  font-size: 0.76rem;
+  color: var(--text-muted);
+}
+
+.sec-alert-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: var(--r-md);
+  font-size: 0.82rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.sec-alert-box.error {
+  background: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+}
+
+.sec-alert-box.success {
+  background: #f0fdf4;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+}
+
+.sec-admin-locked-card {
+  text-align: center;
+  padding: 2rem 1.5rem;
+  background: var(--bg-subtle);
+  border: 1.5px dashed var(--border-md);
+  border-radius: var(--r-xl);
+}
+
+.sec-admin-locked-card h4 {
+  font-size: 1rem;
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+
+.sec-admin-locked-card p {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  line-height: 1.45;
+  margin-bottom: 8px;
+}
+
+.sec-admin-header-note {
+  background: #f0fdf4;
+  border: 1.5px solid #bbf7d0;
+  border-radius: var(--r-md);
+  padding: 8px 12px;
+  font-size: 0.80rem;
+  color: #166534;
+  margin-bottom: 0.75rem;
+}
+
 /* ─── CALCULATOR POPUP ─── */
 .calc-body {
   display: flex;
