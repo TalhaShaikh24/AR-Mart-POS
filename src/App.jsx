@@ -210,6 +210,12 @@ export default function App() {
         updated[idx] = { ...updated[idx], qty: Math.round((updated[idx].qty + qtyToAdd) * 100) / 100 };
         return updated;
       }
+      const itemMrp = Number(product.mrp || product.rate || 0);
+      const itemRate = Number(product.rate || 0);
+      const itemDiscount = product.discount !== undefined 
+        ? Number(product.discount) 
+        : (itemMrp > itemRate ? Math.round((itemMrp - itemRate) * 100) / 100 : 0);
+
       return [
         ...prev,
         {
@@ -217,8 +223,9 @@ export default function App() {
           name: product.name,
           category: product.category || 'General',
           unit: product.unit || '1 KG',
-          mrp: Number(product.mrp || product.rate),
-          rate: Number(product.rate),
+          mrp: itemMrp,
+          rate: itemRate,
+          discount: itemDiscount,
           tax: Number(product.tax || 0),
           stock: product.stock || 250,
           sku: product.sku || product.barcode || `SKU-${Math.floor(1000000 + Math.random() * 9000000)}`,
@@ -375,18 +382,19 @@ export default function App() {
       items: cart.map(x => ({
         id: x.id,
         name: x.name,
-        category: x.category,
-        unit: x.unit,
+        category: x.category || 'General',
+        unit: x.unit || '1 PCS',
         qty: x.qty,
-        mrp: x.mrp,
-        rate: x.rate,
-        tax: x.tax,
-        amount: x.qty * x.rate
+        mrp: Number(x.mrp || x.rate),
+        rate: Number(x.rate),
+        discount: Number(x.discount || 0),
+        tax: Number(x.tax || 0),
+        amount: Number(x.qty * x.rate)
       })),
       totalItems: cart.length,
       totalQty: Math.round(cart.reduce((s, i) => s + i.qty, 0) * 100) / 100,
       subTotal: subtotal,
-      discount: discountAmount,
+      discount: Number(discountAmount || 0) + cart.reduce((s, i) => s + (Number(i.discount || 0) * Number(i.qty || 1)), 0),
       tax: tax,
       grandTotal: totalPayable,
       paymentMethod: paymentMethod,
@@ -845,7 +853,18 @@ export default function App() {
                       <div className="f-prod-meta">
                         <strong className="f-prod-name">{item.name}</strong>
                         <span className="f-prod-sku">
-                          SKU: {item.sku || '1235667'} • Stock: {item.stock || 345} • {item.unit}
+                          {item.category && <span style={{ color: '#0284c7', fontWeight: 600 }}>{item.category} • </span>}
+                          Unit: <strong>{item.unit}</strong>
+                          {Number(item.mrp || 0) > Number(item.rate || 0) && (
+                            <span style={{ textDecoration: 'line-through', color: '#94a3b8', marginLeft: '5px' }}>
+                              ₹{Number(item.mrp).toFixed(2)}
+                            </span>
+                          )}
+                          {Number(item.discount || 0) > 0 && (
+                            <span style={{ color: '#16a34a', fontWeight: 700, marginLeft: '5px' }}>
+                              Save ₹{Number(item.discount).toFixed(2)}
+                            </span>
+                          )}
                         </span>
                       </div>
                     </div>

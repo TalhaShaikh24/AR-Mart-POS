@@ -2270,6 +2270,70 @@ input:checked + .f-slider::before { transform: translateX(16px); }
   margin-bottom: 0.5rem;
 }
 
+/* ─── CUSTOM PRODUCT MODAL STYLES ─── */
+.discount-toggle-group {
+  display: inline-flex;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-md);
+  border-radius: 6px;
+  overflow: hidden;
+  padding: 2px;
+  gap: 2px;
+}
+
+.discount-toggle-btn {
+  border: none;
+  background: transparent;
+  padding: 2px 8px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  border-radius: 4px;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.discount-toggle-btn.active {
+  background: var(--brand-green);
+  color: #ffffff;
+}
+
+.custom-prod-summary-box {
+  background: var(--bg-subtle);
+  border: 1.5px solid var(--brand-green-border);
+  border-radius: var(--r-lg);
+  padding: 0.85rem 1rem;
+  margin-top: 0.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.82rem;
+  color: var(--text-primary);
+}
+
+.summary-row.savings-text {
+  color: #16a34a;
+  font-weight: 700;
+}
+
+.summary-row.total-row {
+  padding-top: 6px;
+  border-top: 1px solid var(--border-md);
+  font-weight: 800;
+}
+
+.summary-grand-total {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.05rem;
+  font-weight: 900;
+  color: var(--brand-green-dark);
+}
+
 /* ─── CALCULATOR POPUP ─── */
 .calc-body {
   display: flex;
