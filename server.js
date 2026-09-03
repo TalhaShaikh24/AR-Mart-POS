@@ -129,10 +129,10 @@ const SettingSchema = new mongoose.Schema({
   verifyBaseUrl: { type: String, default: '' }
 });
 
-const User = mongoose.model('User', UserSchema);
-const Product = mongoose.model('Product', ProductSchema);
-const Invoice = mongoose.model('Invoice', InvoiceSchema);
-const Setting = mongoose.model('Setting', SettingSchema);
+const User = mongoose.models.User || mongoose.model('User', UserSchema);
+const Product = mongoose.models.Product || mongoose.model('Product', ProductSchema);
+const Invoice = mongoose.models.Invoice || mongoose.model('Invoice', InvoiceSchema);
+const Setting = mongoose.models.Setting || mongoose.model('Setting', SettingSchema);
 
 // Initial Seed Users
 const DEFAULT_USERS = [
@@ -144,16 +144,41 @@ const DEFAULT_USERS = [
 memoryStore.users = [...DEFAULT_USERS];
 memoryStore.heldBills = [];
 
-// --- CONNECT TO MONGODB ---
-mongoose.connect(MONGODB_URI, {
-  serverSelectionTimeoutMS: 2500
-}).then(async () => {
-  isMongoConnected = true;
-  console.log(' MongoDB Connected Successfully at:', MONGODB_URI);
-  await seedMongoDatabase();
-}).catch(err => {
-  console.warn(' MongoDB is not running locally. Operating in Auto-Fallback Store Mode.', err.message);
-  isMongoConnected = false;
+// --- SERVERLESS-READY MONGODB CONNECTION ---
+let mongoConnectingPromise = null;
+
+async function connectToMongo() {
+  if (mongoose.connection.readyState === 1) {
+    isMongoConnected = true;
+    return;
+  }
+  if (!mongoConnectingPromise) {
+    mongoConnectingPromise = mongoose.connect(MONGODB_URI, {
+      serverSelectionTimeoutMS: 3000
+    }).then(async () => {
+      isMongoConnected = true;
+      console.log(' MongoDB Connected Successfully at:', MONGODB_URI);
+      await seedMongoDatabase();
+    }).catch(err => {
+      console.warn(' MongoDB note: Running in Auto-Fallback Store Mode.', err.message);
+      isMongoConnected = false;
+      mongoConnectingPromise = null;
+    });
+  }
+  return mongoConnectingPromise;
+}
+
+// Initial connection attempt
+connectToMongo();
+
+// Serverless connection assurance middleware
+app.use(async (req, res, next) => {
+  if (mongoose.connection.readyState !== 1 && MONGODB_URI) {
+    try {
+      await connectToMongo();
+    } catch (e) {}
+  }
+  next();
 });
 
 async function seedMongoDatabase() {
@@ -374,7 +399,7 @@ app.get('/api/settings', async (req, res) => {
 app.post('/api/settings', async (req, res) => {
   try {
     if (isMongoConnected) {
-      let settings = await Setting.findOneAndUpdate({}, req.body, { upsert: true, new: true });
+      let settings = await Setting.findOneAndUpdate({}, req.body, { upsert: true, returnDocument: 'after' });
       return res.json(settings);
     }
     memoryStore.settings = { ...memoryStore.settings, ...req.body };
@@ -384,12 +409,17 @@ app.post('/api/settings', async (req, res) => {
   }
 });
 
-// Serve frontend in production
-app.use(express.static(path.join(__dirname, 'dist')));
-app.use((req, res) => {
-  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
-});
+// Serve frontend in standalone production (when running locally or VPS via node server.js)
+if (process.env.VERCEL !== '1' && !process.env.NOW_REGION) {
+  app.use(express.static(path.join(__dirname, 'dist')));
+  app.use((req, res) => {
+    res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+  });
 
-app.listen(PORT, () => {
-  console.log(` AR Mart POS Server listening on http://localhost:${PORT}`);
-});
+  app.listen(PORT, () => {
+    console.log(` AR Mart POS Server listening on http://localhost:${PORT}`);
+  });
+}
+
+// Export for Vercel Serverless Function
+module.exports = app;
