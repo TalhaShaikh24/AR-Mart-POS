@@ -4817,28 +4817,6 @@ input:checked + .f-slider::before { transform: translateX(16px); }
   line-height: 1.3;
 }
 
-.v-print-btn {
-  width: 100%;
-  height: 46px;
-  background: #16a34a;
-  color: #ffffff;
-  border: none;
-  border-radius: 10px;
-  font-weight: 800;
-  font-size: 0.92rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  box-shadow: 0 4px 12px rgba(22, 163, 74, 0.25);
-  transition: all 0.15s ease;
-}
-
-.v-print-btn:hover {
-  background: #15803d;
-}
-
 .mobile-verify-footer {
   padding: 1rem;
   background: #f8fafc;

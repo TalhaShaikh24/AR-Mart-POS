@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import ArMartLogo from './ArMartLogo';
-import { ShieldCheck, CheckCircle2, Printer, ArrowLeft } from 'lucide-react';
+import { ShieldCheck, CheckCircle2, ArrowLeft } from 'lucide-react';
 
 export default function CustomerVerifyView({ invoiceData, onBack }) {
   const [data, setData] = useState(invoiceData);
@@ -191,10 +191,6 @@ export default function CustomerVerifyView({ invoiceData, onBack }) {
               <p>Confirmed genuine transaction recorded in AR Mart POS database.</p>
             </div>
           </div>
-
-          <button className="v-print-btn" onClick={() => window.print()}>
-            <Printer size={18} /> Print / Save Customer Copy
-          </button>
         </div>
 
         <div className="mobile-verify-footer">
