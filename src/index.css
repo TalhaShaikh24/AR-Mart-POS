@@ -1109,6 +1109,58 @@ body {
   background: var(--brand-blue-subtle);
 }
 
+/* Customer Address Input Row */
+.f-cust-address-row {
+  display: flex;
+  align-items: center;
+  position: relative;
+  margin-top: -4px;
+  margin-bottom: 4px;
+}
+
+.cust-addr-icon {
+  position: absolute;
+  left: 12px;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.f-cust-address-input {
+  width: 100%;
+  height: 36px;
+  padding: 0 32px 0 34px;
+  border: 1.5px solid var(--border-md);
+  border-radius: var(--r-md);
+  font-size: 0.80rem;
+  font-weight: 600;
+  outline: none;
+  background: var(--surface);
+  color: var(--text-primary);
+  transition: all 0.18s;
+  box-sizing: border-box;
+}
+
+.f-cust-address-input:focus {
+  border-color: var(--brand-green);
+  box-shadow: 0 0 0 2px var(--brand-green-subtle);
+}
+
+.f-addr-clear-btn {
+  position: absolute;
+  right: 10px;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 0.85rem;
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+
+.f-addr-clear-btn:hover {
+  color: #dc2626;
+}
+
 /* Payment Summary Box (Solid Flat Styling) */
 .f-payment-summary-section {
   display: flex;
@@ -1148,6 +1200,99 @@ body {
   color: var(--brand-green-dark) !important;
 }
 
+/* Tax GST Input & Chips Group */
+.f-tax-box-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: var(--surface);
+  border: 1px solid var(--border-md);
+  border-radius: var(--r-md);
+  padding: 8px 10px;
+  margin: 2px 0;
+}
+
+.f-tax-sum-line {
+  margin: 0 !important;
+}
+
+.f-tax-label-wrap {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.86rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.f-tax-input-pill {
+  display: inline-flex;
+  align-items: center;
+  background: var(--bg-subtle);
+  border: 1.5px solid var(--border-md);
+  border-radius: var(--r-sm);
+  padding: 1px 4px;
+  margin: 0 2px;
+}
+
+.f-tax-percent-input {
+  width: 44px;
+  height: 24px;
+  text-align: center;
+  border: none;
+  background: transparent;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.86rem;
+  font-weight: 800;
+  color: var(--brand-green-dark);
+  outline: none;
+  -moz-appearance: textfield;
+}
+
+.f-tax-percent-input::-webkit-outer-spin-button,
+.f-tax-percent-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.percent-symbol {
+  font-size: 0.80rem;
+  font-weight: 800;
+  color: var(--text-muted);
+  padding-right: 2px;
+}
+
+.f-tax-chips-row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.f-tax-chip {
+  padding: 2px 8px;
+  border-radius: var(--r-full);
+  border: 1px solid var(--border-md);
+  background: var(--bg-subtle);
+  color: var(--text-secondary);
+  font-size: 0.72rem;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.f-tax-chip:hover {
+  border-color: var(--brand-green);
+  color: var(--brand-green-dark);
+  background: var(--surface);
+}
+
+.f-tax-chip.active {
+  background: var(--brand-green);
+  border-color: var(--brand-green-dark);
+  color: #ffffff;
+}
+
 /* Promo Row */
 .f-promo-row {
   display: flex;
@@ -1172,7 +1317,7 @@ body {
 .f-promo-input-wrap input {
   width: 100%;
   height: 38px;
-  padding: 0 10px 0 36px;
+  padding: 0 28px 0 36px;
   border: 1.5px solid var(--border-md);
   border-radius: var(--r-md);
   font-size: 0.82rem;
@@ -1186,6 +1331,21 @@ body {
 
 .f-promo-input-wrap input:focus {
   border-color: var(--brand-green);
+}
+
+.f-promo-clear-icon-btn {
+  position: absolute;
+  right: 8px;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 0.85rem;
+  padding: 2px 4px;
+}
+
+.f-promo-clear-icon-btn:hover {
+  color: #dc2626;
 }
 
 .f-promo-apply-btn {
@@ -1204,6 +1364,86 @@ body {
 
 .f-promo-apply-btn:hover {
   background: var(--brand-green-dark);
+}
+
+.f-promo-remove-btn {
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1.5px solid #fecaca;
+  border-radius: var(--r-md);
+  padding: 0 12px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.f-promo-remove-btn:hover {
+  background: #fee2e2;
+  border-color: #f87171;
+}
+
+/* Active Applied Discount Banner */
+.f-applied-discount-pill {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: var(--r-md);
+  padding: 6px 10px;
+  margin: 2px 0 4px;
+  font-size: 0.80rem;
+  color: #166534;
+}
+
+.f-applied-disc-text {
+  font-weight: 600;
+}
+
+.f-applied-disc-text strong {
+  color: #15803d;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.f-disc-pill-remove {
+  background: transparent;
+  border: none;
+  color: #dc2626;
+  font-weight: 800;
+  font-size: 0.76rem;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+  transition: background 0.15s;
+}
+
+.f-disc-pill-remove:hover {
+  background: #fee2e2;
+}
+
+.f-discount-label-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.f-discount-del-btn {
+  background: #fee2e2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+  border-radius: var(--r-full);
+  font-size: 0.68rem;
+  font-weight: 800;
+  padding: 1px 7px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.f-discount-del-btn:hover {
+  background: #fecdd3;
+  border-color: #fda4af;
 }
 
 /* Roundoff Switch */
@@ -3633,9 +3873,17 @@ input:checked + .f-slider::before { transform: translateX(16px); }
 }
 
 .rcpt-meta-customer {
-  font-size: 7.5pt;
-  color: #333333;
+  font-size: 7.8pt;
+  color: #000000;
   margin-top: 2px;
+  line-height: 1.25;
+}
+
+.rcpt-cust-addr-line {
+  font-size: 7.4pt;
+  color: #000000;
+  margin-top: 1px;
+  word-break: break-word;
 }
 
 /* Items Table */

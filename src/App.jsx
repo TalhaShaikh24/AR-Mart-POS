@@ -39,6 +39,7 @@ import {
   Sun,
   User,
   UserPlus,
+  MapPin,
   LogOut,
   PauseCircle,
   CreditCard,
@@ -108,8 +109,11 @@ export default function App() {
   const [activeSearchIndex, setActiveSearchIndex] = useState(-1);
   const [customerName, setCustomerName] = useState('');
   const [customerPhone, setCustomerPhone] = useState('');
+  const [customerAddress, setCustomerAddress] = useState('');
   const [promoCode, setPromoCode] = useState('');
   const [discountAmount, setDiscountAmount] = useState(0);
+  const [appliedPromo, setAppliedPromo] = useState('');
+  const [taxPercent, setTaxPercent] = useState('0'); // custom GST % input (e.g. 0, 5, 12, 18)
   const [roundoffEnabled, setRoundoffEnabled] = useState(true);
   const [paymentMethod, setPaymentMethod] = useState('Cash'); // 'Cash' | 'Card' | 'Scan'
 
@@ -349,7 +353,14 @@ export default function App() {
 
   // Calculations
   const subtotal = cart.reduce((sum, item) => sum + (item.qty * item.rate), 0);
-  const tax = cart.reduce((sum, item) => sum + (item.qty * (item.tax || 0)), 0);
+  
+  // Tax calculation: based on user input taxPercent (%) or item-level taxes
+  const numericTaxPercent = parseFloat(taxPercent) || 0;
+  const itemLevelTax = cart.reduce((sum, item) => sum + (item.qty * (item.tax || 0)), 0);
+  const tax = numericTaxPercent > 0 
+    ? Math.round((subtotal * (numericTaxPercent / 100)) * 100) / 100 
+    : (numericTaxPercent === 0 && taxPercent !== '' ? 0 : itemLevelTax);
+
   const grossTotal = subtotal + tax;
   const rawPayable = Math.max(0, grossTotal - discountAmount);
   const totalPayable = roundoffEnabled ? Math.round(rawPayable) : rawPayable;
@@ -357,25 +368,36 @@ export default function App() {
 
   // Apply Promo code
   const handleApplyPromo = (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     if (!promoCode.trim()) return;
     const clean = promoCode.trim().toUpperCase();
     if (clean === 'SAVE50') {
       setDiscountAmount(50);
+      setAppliedPromo('SAVE50');
       alert('Promo code SAVE50 applied! ₹50.00 discount granted.');
     } else if (clean === 'ARMART10') {
       const disc = Math.round(subtotal * 0.1);
       setDiscountAmount(disc);
+      setAppliedPromo('ARMART10 (10%)');
       alert(`Promo code ARMART10 applied! 10% (₹${disc}) discount granted.`);
     } else {
       const numVal = parseFloat(promoCode);
       if (!isNaN(numVal) && numVal > 0) {
         setDiscountAmount(numVal);
+        setAppliedPromo(`₹${numVal.toFixed(2)}`);
         alert(`Discount of ₹${numVal.toFixed(2)} applied.`);
+      } else if (!isNaN(numVal) && numVal === 0) {
+        handleRemoveDiscount();
       } else {
-        alert('Invalid promo code. Try SAVE50 or enter discount amount.');
+        alert('Invalid promo code. Try SAVE50, ARMART10, or enter discount amount in ₹.');
       }
     }
+  };
+
+  const handleRemoveDiscount = () => {
+    setDiscountAmount(0);
+    setPromoCode('');
+    setAppliedPromo('');
   };
 
   // Hold Bill
@@ -390,9 +412,12 @@ export default function App() {
       invoiceNo: invoiceSeq,
       customerName: customerName || 'Walk-in',
       customerPhone,
+      customerAddress,
       items: cart,
       subtotal,
       discount: discountAmount,
+      tax,
+      taxPercent: numericTaxPercent,
       grandTotal: totalPayable,
       biller: currentUser.name,
       heldAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
@@ -410,7 +435,11 @@ export default function App() {
     setCart([]);
     setCustomerName('');
     setCustomerPhone('');
+    setCustomerAddress('');
     setDiscountAmount(0);
+    setPromoCode('');
+    setAppliedPromo('');
+    setTaxPercent('0');
     generateInvoiceSequence();
     alert(`Bill ${held.invoiceNo} is now on hold.`);
   };
@@ -419,7 +448,9 @@ export default function App() {
     setCart(bill.items || []);
     setCustomerName(bill.customerName === 'Walk-in' ? '' : bill.customerName);
     setCustomerPhone(bill.customerPhone || '');
+    setCustomerAddress(bill.customerAddress || '');
     setDiscountAmount(bill.discount || 0);
+    setTaxPercent(bill.taxPercent !== undefined ? String(bill.taxPercent) : '0');
     setInvoiceSeq(bill.invoiceNo);
     setShowHeldBills(false);
 
@@ -438,6 +469,7 @@ export default function App() {
       timestamp: now.toISOString(),
       customerName: customerName.trim() || 'Walk-in Customer',
       customerPhone: customerPhone.trim(),
+      customerAddress: customerAddress.trim(),
       items: cart.map(x => ({
         id: x.id,
         name: x.name,
@@ -455,6 +487,7 @@ export default function App() {
       subTotal: subtotal,
       discount: Number(discountAmount || 0) + cart.reduce((s, i) => s + (Number(i.discount || 0) * Number(i.qty || 1)), 0),
       tax: tax,
+      taxPercent: numericTaxPercent,
       grandTotal: totalPayable,
       paymentMethod: paymentMethod,
       biller: currentUser.name,
@@ -497,8 +530,11 @@ export default function App() {
       setCart([]);
       setCustomerName('');
       setCustomerPhone('');
+      setCustomerAddress('');
       setDiscountAmount(0);
       setPromoCode('');
+      setAppliedPromo('');
+      setTaxPercent('0');
       generateInvoiceSequence();
     }, 400);
   };
@@ -520,8 +556,11 @@ export default function App() {
       setCart([]);
       setCustomerName('');
       setCustomerPhone('');
+      setCustomerAddress('');
       setDiscountAmount(0);
       setPromoCode('');
+      setAppliedPromo('');
+      setTaxPercent('0');
       generateInvoiceSequence();
     }, 300);
   };
@@ -1106,6 +1145,28 @@ export default function App() {
                 </button>
               </div>
 
+              {/* Customer Address Input Row (Appears on receipt) */}
+              <div className="f-cust-address-row">
+                <MapPin size={14} className="cust-addr-icon" />
+                <input 
+                  type="text" 
+                  placeholder="Customer Address (appears on printed bill)" 
+                  value={customerAddress}
+                  onChange={e => setCustomerAddress(e.target.value)}
+                  className="f-cust-address-input"
+                />
+                {customerAddress && (
+                  <button 
+                    type="button" 
+                    className="f-addr-clear-btn" 
+                    onClick={() => setCustomerAddress('')}
+                    title="Clear Address"
+                  >
+                    ✕
+                  </button>
+                )}
+              </div>
+
               {/* Payment Summary */}
               <div className="f-payment-summary-section">
                 <h4 className="f-summary-title">Payment Summary</h4>
@@ -1115,12 +1176,49 @@ export default function App() {
                   <span className="font-mono font-bold">₹{subtotal.toFixed(2)}</span>
                 </div>
 
-                <div className="f-sum-line">
-                  <span>Tax (GST 0%)</span>
-                  <span className="font-mono">₹{tax.toFixed(2)}</span>
+                {/* Tax (GST) with Input & Quick Chips */}
+                <div className="f-tax-box-group">
+                  <div className="f-sum-line f-tax-sum-line">
+                    <div className="f-tax-label-wrap">
+                      <span>Tax (GST</span>
+                      <div className="f-tax-input-pill">
+                        <input 
+                          type="number" 
+                          min="0" 
+                          max="100" 
+                          step="any"
+                          placeholder="0" 
+                          value={taxPercent}
+                          onChange={e => {
+                            const val = e.target.value;
+                            if (val === '' || (!isNaN(val) && Number(val) >= 0 && Number(val) <= 100)) {
+                              setTaxPercent(val);
+                            }
+                          }}
+                          className="f-tax-percent-input"
+                          title="Enter GST Percentage (%)"
+                        />
+                        <span className="percent-symbol">%</span>
+                      </div>
+                      <span>)</span>
+                    </div>
+                    <span className="font-mono font-bold">₹{tax.toFixed(2)}</span>
+                  </div>
+                  <div className="f-tax-chips-row">
+                    {['0', '5', '12', '18'].map(rate => (
+                      <button
+                        key={rate}
+                        type="button"
+                        className={`f-tax-chip ${String(taxPercent) === rate ? 'active' : ''}`}
+                        onClick={() => setTaxPercent(rate)}
+                      >
+                        {rate}%
+                      </button>
+                    ))}
+                  </div>
                 </div>
 
-                {/* Promo Code Input */}
+                {/* Promo Code Input & Remove capability */}
                 <form className="f-promo-row" onSubmit={handleApplyPromo}>
                   <div className="f-promo-input-wrap">
                     <Tag size={14} className="promo-icon" />
@@ -1130,9 +1228,46 @@ export default function App() {
                       value={promoCode}
                       onChange={e => setPromoCode(e.target.value)}
                     />
+                    {promoCode && (
+                      <button 
+                        type="button" 
+                        className="f-promo-clear-icon-btn" 
+                        onClick={() => setPromoCode('')}
+                        title="Clear Input"
+                      >
+                        ✕
+                      </button>
+                    )}
                   </div>
                   <button type="submit" className="f-promo-apply-btn">Apply</button>
+                  {discountAmount > 0 && (
+                    <button 
+                      type="button" 
+                      className="f-promo-remove-btn" 
+                      onClick={handleRemoveDiscount}
+                      title="Remove Applied Discount"
+                    >
+                      Remove ✕
+                    </button>
+                  )}
                 </form>
+
+                {/* Active Applied Discount Banner */}
+                {discountAmount > 0 && (
+                  <div className="f-applied-discount-pill">
+                    <span className="f-applied-disc-text">
+                      🏷️ Discount Applied: <strong>₹{discountAmount.toFixed(2)}</strong> {appliedPromo ? `(${appliedPromo})` : ''}
+                    </span>
+                    <button 
+                      type="button" 
+                      className="f-disc-pill-remove" 
+                      onClick={handleRemoveDiscount} 
+                      title="Remove Discount"
+                    >
+                      ✕ Remove
+                    </button>
+                  </div>
+                )}
 
                 <div className="f-sum-line">
                   <span>Total</span>
@@ -1140,7 +1275,19 @@ export default function App() {
                 </div>
 
                 <div className="f-sum-line">
-                  <span>Discount</span>
+                  <div className="f-discount-label-group">
+                    <span>Discount</span>
+                    {discountAmount > 0 && (
+                      <button 
+                        type="button" 
+                        className="f-discount-del-btn" 
+                        onClick={handleRemoveDiscount}
+                        title="Remove Discount"
+                      >
+                        Remove ✕
+                      </button>
+                    )}
+                  </div>
                   <span className="font-mono text-green">- ₹{discountAmount.toFixed(2)}</span>
                 </div>
 
@@ -1265,6 +1412,7 @@ export default function App() {
       onSaveCustomer={(cust) => {
         setCustomerName(cust.name);
         setCustomerPhone(cust.phone);
+        setCustomerAddress(cust.address || '');
       }}
     />
     <HistoryModal 

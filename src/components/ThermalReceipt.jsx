@@ -31,6 +31,7 @@ export default function ThermalReceipt({ invoice, storeConfig, isCompact = false
         t: invoice.time,
         c: invoice.customerName,
         p: invoice.customerPhone,
+        ad: invoice.customerAddress || '',
         it: (invoice.items || []).map(x => ({ 
           n: x.name, 
           u: x.unit, 
@@ -41,6 +42,7 @@ export default function ThermalReceipt({ invoice, storeConfig, isCompact = false
         st: Number(invoice.subTotal || 0),
         ds: Number(invoice.discount || 0),
         tx: Number(invoice.tax || 0),
+        tp: invoice.taxPercent !== undefined ? Number(invoice.taxPercent) : (Number(invoice.tax || 0) > 0 && Number(invoice.subTotal || 0) > 0 ? Math.round((Number(invoice.tax) / Number(invoice.subTotal)) * 100) : 0),
         gt: Number(invoice.grandTotal || 0),
         s: storeConfig?.storeName || 'AR Mart',
         f: storeConfig?.fssai || '21026252000118'
@@ -108,11 +110,23 @@ export default function ThermalReceipt({ invoice, storeConfig, isCompact = false
       {/* 3. Invoice Meta: Invoice No on left, Date & Time on right */}
       <div className="rcpt-meta-row">
         <div className="rcpt-meta-left">
-          <span>Invoice No. : </span>
-          <strong>{invoice.invoiceNo}</strong>
-          {(invoice.customerName || invoice.customerPhone) && (
+          <div className="rcpt-inv-line">
+            <span>Invoice No. : </span>
+            <strong>{invoice.invoiceNo}</strong>
+          </div>
+          {(invoice.customerName || invoice.customerPhone || invoice.customerAddress) && (
             <div className="rcpt-meta-customer">
-              <span>Cust: {invoice.customerName} {invoice.customerPhone ? `(${invoice.customerPhone})` : ''}</span>
+              <div>
+                <span>Cust : </span>
+                <strong>{invoice.customerName}</strong>
+                {invoice.customerPhone ? ` (${invoice.customerPhone})` : ''}
+              </div>
+              {invoice.customerAddress && (
+                <div className="rcpt-cust-addr-line">
+                  <span>Address : </span>
+                  <span>{invoice.customerAddress}</span>
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -192,7 +206,9 @@ export default function ThermalReceipt({ invoice, storeConfig, isCompact = false
             <span className="totals-val font-mono">{formatMoney(discount)}</span>
           </div>
           <div className="totals-line">
-            <span className="totals-lbl">Tax (GST 0%)</span>
+            <span className="totals-lbl">
+              Tax (GST {invoice.taxPercent !== undefined ? invoice.taxPercent : (tax > 0 && subTotal > 0 ? Math.round((tax / subTotal) * 100) : 0)}%)
+            </span>
             <span className="totals-colon">:</span>
             <span className="totals-val font-mono">{formatMoney(tax)}</span>
           </div>

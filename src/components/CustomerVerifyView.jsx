@@ -26,10 +26,12 @@ export default function CustomerVerifyView({ invoiceData, onBack }) {
           time: decoded.t,
           customerName: decoded.c,
           customerPhone: decoded.p,
+          customerAddress: decoded.ad || '',
           items: (decoded.it || []).map(x => ({ name: x.n, unit: x.u, qty: x.q, rate: x.r, amount: x.a })),
           subTotal: decoded.st,
           discount: decoded.ds,
           tax: decoded.tx,
+          taxPercent: decoded.tp !== undefined ? decoded.tp : (decoded.tx > 0 && decoded.st > 0 ? Math.round((decoded.tx / decoded.st) * 100) : 0),
           grandTotal: decoded.gt,
           store: { name: decoded.s || 'AR Mart', fssai: decoded.f || '21026252000118' }
         });
@@ -125,9 +127,14 @@ export default function CustomerVerifyView({ invoiceData, onBack }) {
             <div className="v-store-sub">Support: 01955317530 • WhatsApp: 9682329952</div>
           </div>
 
-          {invoice.customerName && (
+          {(invoice.customerName || invoice.customerAddress) && (
             <div className="v-cust-bar">
-              Billed To: <strong>{invoice.customerName}</strong> {invoice.customerPhone && `(${invoice.customerPhone})`}
+              <div>Billed To: <strong>{invoice.customerName || 'Customer'}</strong> {invoice.customerPhone && `(${invoice.customerPhone})`}</div>
+              {invoice.customerAddress && (
+                <div style={{ marginTop: '3px', fontSize: '0.78rem', color: '#1e40af' }}>
+                  Address: <strong>{invoice.customerAddress}</strong>
+                </div>
+              )}
             </div>
           )}
 
@@ -173,7 +180,7 @@ export default function CustomerVerifyView({ invoiceData, onBack }) {
               </div>
             )}
             <div className="v-total-row">
-              <span>Tax (GST 0%)</span>
+              <span>Tax (GST {invoice.taxPercent !== undefined ? invoice.taxPercent : (invoice.tax > 0 && invoice.subTotal > 0 ? Math.round((invoice.tax / invoice.subTotal) * 100) : 0)}%)</span>
               <span>₹{Number(invoice.tax || 0).toFixed(2)}</span>
             </div>
             <div className="v-divider"></div>
