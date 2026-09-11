@@ -8,14 +8,14 @@ export default function ThermalReceipt({ invoice, storeConfig, isCompact = false
     if (!invoice || !qrCanvasRef.current) return;
 
     let payload = '';
-    const mode = storeConfig?.qrMode || 'verify';
+    const mode = storeConfig?.qrMode || 'upi';
 
-    if (mode === 'upi') {
-      const upiId = (storeConfig?.whatsapp || '9682329952') + '@upi';
-      payload = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(storeConfig?.bankName || 'AR DELIVERO')}&am=${Number(invoice.grandTotal || 0).toFixed(2)}&cu=INR&tn=AR_Mart_${String(invoice.invoiceNo || '').replace(/\//g, '_')}`;
-    } else if (mode === 'offline') {
-      payload = `AR MART OFFICIAL RECEIPT\nInvoice: ${invoice.invoiceNo}\nDate: ${invoice.date} ${invoice.time}\nItems: ${invoice.items?.length || 0} (Qty: ${invoice.totalQty})\nTotal: ₹${Number(invoice.grandTotal || 0).toFixed(2)}\nFSSAI: ${storeConfig?.fssai || '21026252000118'}\nVerified Authentic Store Copy`;
-    } else {
+    const upiId = storeConfig?.upiId || `${storeConfig?.whatsapp || '9682329952'}@upi`;
+    const payeeName = storeConfig?.bankName || 'AR DELIVERO';
+    const amountVal = Number(invoice.grandTotal || 0).toFixed(2);
+    const cleanInv = String(invoice.invoiceNo || '').replace(/[^a-zA-Z0-9]/g, '_');
+
+    if (mode === 'verify') {
       // Mobile-friendly verification certificate link (Bypasses cashier login screen)
       let baseUrl = storeConfig?.verifyBaseUrl;
       if (!baseUrl) {
@@ -54,6 +54,11 @@ export default function ThermalReceipt({ invoice, storeConfig, isCompact = false
       } catch (err) {
         payload = baseUrl;
       }
+    } else if (mode === 'offline') {
+      payload = `AR MART OFFICIAL RECEIPT\nInvoice: ${invoice.invoiceNo}\nDate: ${invoice.date} ${invoice.time}\nItems: ${invoice.items?.length || 0} (Qty: ${invoice.totalQty})\nTotal: ₹${amountVal}\nFSSAI: ${storeConfig?.fssai || '21026252000118'}\nVerified Authentic Store Copy`;
+    } else {
+      // Default: Direct UPI Payment QR Code (Scan to Pay with GPay / PhonePe / Paytm)
+      payload = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(payeeName)}&am=${amountVal}&cu=INR&tn=AR_Mart_${cleanInv}`;
     }
 
     QRCode.toCanvas(qrCanvasRef.current, payload, {
@@ -273,6 +278,12 @@ export default function ThermalReceipt({ invoice, storeConfig, isCompact = false
         </div>
 
         <div className="rcpt-qr-footer-name">Name : {cfg.bankName || 'AR Delivero'}</div>
+        <div className="rcpt-qr-footer-upi" style={{ fontSize: '0.74rem', fontWeight: '700', marginTop: '1px', color: '#111827' }}>
+          UPI: {cfg.upiId || `${cfg.whatsapp || '9682329952'}@upi`}
+        </div>
+        <div className="rcpt-qr-footer-apps" style={{ fontSize: '0.62rem', color: '#4b5563', marginTop: '1px' }}>
+          Scan to Pay (GPay / PhonePe / Paytm)
+        </div>
       </div>
 
       {/* 13. Bottom Dashed Line */}

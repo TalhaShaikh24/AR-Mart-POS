@@ -97,8 +97,9 @@ export default function App() {
     bankIfsc: 'SBIN0003996',
     bankName: 'AR DELIVERO',
     bankBranch: 'SBI Handwara',
+    upiId: '9682329952@upi',
     paperSize: '80mm',
-    qrMode: 'verify',
+    qrMode: 'upi',
     verifyBaseUrl: ''
   });
 
@@ -708,7 +709,7 @@ export default function App() {
 
   // 1. If customer scanned QR code on bill or is viewing verification certificate -> OPEN DIRECTLY (NO LOGIN)
   if (isVerifyMode) {
-    return <CustomerVerifyView />;
+    return <CustomerVerifyView storeConfig={storeConfig} />;
   }
 
   // 2. If POS Terminal Lock Screen is active (requires cashier PIN)
@@ -1224,7 +1225,7 @@ export default function App() {
                     <Tag size={14} className="promo-icon" />
                     <input 
                       type="text" 
-                      placeholder="Promo Code or ₹ Amount" 
+                      placeholder="Amount Disc" 
                       value={promoCode}
                       onChange={e => setPromoCode(e.target.value)}
                     />

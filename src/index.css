@@ -5100,5 +5100,246 @@ input:checked + .f-slider::before { transform: translateX(16px); }
   animation: spin 0.8s linear infinite;
 }
 
+/* ==========================================================================
+   DIRECT PAYMENT VIA UPI CARD (CustomerVerifyView)
+   ========================================================================== */
+.v-payment-card {
+  background: #ffffff;
+  border: 1.5px solid #a7f3d0;
+  border-radius: 14px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.08);
+  box-sizing: border-box;
+}
 
+.v-payment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #f0fdf4;
+  padding-bottom: 8px;
+}
 
+.v-payment-title-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.v-pay-icon {
+  color: #059669;
+  flex-shrink: 0;
+}
+
+.v-pay-title {
+  margin: 0;
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: #065f46;
+}
+
+.v-pay-subtitle {
+  margin: 1px 0 0;
+  font-size: 0.71rem;
+  color: #047857;
+  font-weight: 500;
+}
+
+.v-pay-badge-instant {
+  background: #ecfdf5;
+  border: 1px solid #6ee7b7;
+  color: #047857;
+  font-size: 0.7rem;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 9999px;
+  white-space: nowrap;
+}
+
+.v-payment-body {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 480px) {
+  .v-payment-body {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+.v-qr-canvas-box {
+  position: relative;
+  background: #ffffff;
+  border: 2px solid #10b981;
+  border-radius: 12px;
+  padding: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  margin: 0 auto;
+}
+
+.v-pay-qr-canvas {
+  display: block;
+  border-radius: 6px;
+  max-width: 160px;
+  height: auto;
+}
+
+.v-qr-center-chip {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #059669;
+  color: #ffffff;
+  padding: 2px 5px;
+  border-radius: 4px;
+  border: 2px solid #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: none;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.v-chip-main {
+  font-size: 9px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.v-chip-sub {
+  font-size: 5.5px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  line-height: 1;
+}
+
+.v-pay-meta {
+  flex: 1;
+  min-width: 190px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.v-pay-meta-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.82rem;
+}
+
+.v-pay-lbl {
+  color: #64748b;
+  font-weight: 600;
+  font-size: 0.76rem;
+}
+
+.v-pay-val {
+  color: #0f172a;
+  font-size: 0.86rem;
+}
+
+.v-upi-copy-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.v-upi-text {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #059669;
+}
+
+.v-copy-btn {
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 2px 7px;
+  font-size: 0.69rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  color: #334155;
+  transition: all 0.15s ease;
+}
+
+.v-copy-btn:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.v-pay-amt {
+  font-size: 1.25rem;
+  font-weight: 900;
+  color: #059669;
+}
+
+.v-pay-bank-line {
+  font-size: 0.72rem;
+  color: #475569;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 6px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  line-height: 1.35;
+  margin-top: 2px;
+}
+
+.v-direct-pay-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: #ffffff !important;
+  text-decoration: none !important;
+  padding: 12px 16px;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
+  transition: all 0.2s ease;
+  margin-top: 4px;
+}
+
+.v-direct-pay-button:hover {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.45);
+  transform: translateY(-1px);
+}
+
+.v-direct-pay-button:active {
+  transform: translateY(0);
+}
+
+.v-btn-top {
+  font-size: 0.98rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.v-btn-sub {
+  font-size: 0.71rem;
+  font-weight: 500;
+  opacity: 0.92;
+  margin-top: 2px;
+}

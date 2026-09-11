@@ -74,6 +74,17 @@ export default function SettingsModal({ isOpen, onClose, storeConfig, onSaveSett
               </div>
             </div>
 
+            <div className="form-field">
+              <label>Direct Payment UPI ID / VPA</label>
+              <input 
+                type="text" 
+                placeholder="e.g. 9682329952@upi" 
+                value={cfg.upiId || ''} 
+                onChange={e => setCfg({ ...cfg, upiId: e.target.value })} 
+              />
+              <small className="field-hint">UPI ID displayed on printed invoice QR and customer verification screen.</small>
+            </div>
+
             <h4 className="modal-section-title">Thermal Receipt & QR Settings</h4>
             <div className="form-field-grid">
               <div className="form-field">
@@ -86,8 +97,8 @@ export default function SettingsModal({ isOpen, onClose, storeConfig, onSaveSett
               <div className="form-field">
                 <label>Receipt QR Mode</label>
                 <select value={cfg.qrMode} onChange={e => setCfg({ ...cfg, qrMode: e.target.value })}>
+                  <option value="upi">UPI Scan & Pay (Direct Payment QR)</option>
                   <option value="verify">Official Mobile Verification Link</option>
-                  <option value="upi">UPI Scan & Pay</option>
                   <option value="offline">Offline Direct Payload</option>
                 </select>
               </div>

@@ -1,10 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import ArMartLogo from './ArMartLogo';
-import { ShieldCheck, CheckCircle2, ArrowLeft } from 'lucide-react';
+import { ShieldCheck, CheckCircle2, ArrowLeft, QrCode, Copy, Check } from 'lucide-react';
+import QRCode from 'qrcode';
 
-export default function CustomerVerifyView({ invoiceData, onBack }) {
+export default function CustomerVerifyView({ invoiceData, onBack, storeConfig }) {
   const [data, setData] = useState(invoiceData);
   const [loading, setLoading] = useState(false);
+  const [copiedUpi, setCopiedUpi] = useState(false);
+  const paymentQrRef = useRef(null);
 
   useEffect(() => {
     if (invoiceData) {
@@ -33,7 +36,15 @@ export default function CustomerVerifyView({ invoiceData, onBack }) {
           tax: decoded.tx,
           taxPercent: decoded.tp !== undefined ? decoded.tp : (decoded.tx > 0 && decoded.st > 0 ? Math.round((decoded.tx / decoded.st) * 100) : 0),
           grandTotal: decoded.gt,
-          store: { name: decoded.s || 'AR Mart', fssai: decoded.f || '21026252000118' }
+          store: { 
+            name: decoded.s || 'AR Mart', 
+            fssai: decoded.f || '21026252000118',
+            bankName: 'AR DELIVERO',
+            upiId: '9682329952@upi',
+            bankAcct: '43749700977',
+            bankIfsc: 'SBIN0003996',
+            bankBranch: 'SBI Handwara'
+          }
         });
       } catch (e) {
         console.error('Failed to parse verify payload', e);
@@ -53,21 +64,23 @@ export default function CustomerVerifyView({ invoiceData, onBack }) {
     }
   }, [invoiceData]);
 
-  if (loading) {
-    return (
-      <div className="verify-loading-container">
-        <div className="verify-spinner"></div>
-        <p>Verifying official receipt with AR Mart servers...</p>
-      </div>
-    );
-  }
-
   const invoice = data || {
     invoiceNo: 'ARM/2025/05/26/001',
     date: '26/05/2025',
     time: '01:35 PM',
     customerName: 'Walk-in Customer',
-    store: { name: 'AR Mart', fssai: '21026252000118', phone: '01955317530', address: 'Braripora Handwara J&K-193221' },
+    store: { 
+      name: 'AR Mart', 
+      fssai: '21026252000118', 
+      phone: '01955317530', 
+      whatsapp: '9682329952',
+      address: 'Braripora Handwara J&K-193221',
+      bankName: 'AR DELIVERO',
+      upiId: '9682329952@upi',
+      bankAcct: '43749700977',
+      bankIfsc: 'SBIN0003996',
+      bankBranch: 'SBI Handwara'
+    },
     items: [
       { name: 'Rice Basmati', unit: '1 KG', qty: 1, rate: 110, amount: 110 },
       { name: 'Atta (Wheat Flour)', unit: '5 KG', qty: 1, rate: 199, amount: 199 },
@@ -80,6 +93,47 @@ export default function CustomerVerifyView({ invoiceData, onBack }) {
     tax: 0.00,
     grandTotal: 640.00
   };
+
+  // Payment Details calculation
+  const upiId = invoice.store?.upiId || storeConfig?.upiId || `${invoice.store?.whatsapp || '9682329952'}@upi`;
+  const payeeName = invoice.store?.bankName || storeConfig?.bankName || 'AR DELIVERO';
+  const bankAcct = invoice.store?.bankAcct || storeConfig?.bankAcct || '43749700977';
+  const bankIfsc = invoice.store?.bankIfsc || storeConfig?.bankIfsc || 'SBIN0003996';
+  const bankBranch = invoice.store?.bankBranch || storeConfig?.bankBranch || 'SBI Handwara';
+  const amountStr = Number(invoice.grandTotal || 0).toFixed(2);
+  const cleanInv = String(invoice.invoiceNo || '').replace(/[^a-zA-Z0-9]/g, '_');
+  const upiUri = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(payeeName)}&am=${amountStr}&cu=INR&tn=AR_Mart_${cleanInv}`;
+
+  // Generate UPI Payment QR Code
+  useEffect(() => {
+    if (!paymentQrRef.current || !invoice) return;
+
+    QRCode.toCanvas(paymentQrRef.current, upiUri, {
+      width: 175,
+      margin: 1,
+      color: {
+        dark: '#0f172a',
+        light: '#ffffff'
+      }
+    }).catch(err => console.error('Failed to render UPI QR', err));
+  }, [upiUri, invoice]);
+
+  const handleCopyUpi = () => {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(upiId);
+    }
+    setCopiedUpi(true);
+    setTimeout(() => setCopiedUpi(false), 2200);
+  };
+
+  if (loading) {
+    return (
+      <div className="verify-loading-container">
+        <div className="verify-spinner"></div>
+        <p>Verifying official receipt with AR Mart servers...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="mobile-verify-wrapper">
@@ -188,6 +242,78 @@ export default function CustomerVerifyView({ invoiceData, onBack }) {
               <span>TOTAL PAID</span>
               <span className="v-grand-amt">₹{Number(invoice.grandTotal || 0).toFixed(2)}</span>
             </div>
+          </div>
+
+          {/* Direct Payment QR & 1-Tap UPI Pay */}
+          <div className="v-payment-card">
+            <div className="v-payment-header">
+              <div className="v-payment-title-box">
+                <QrCode size={19} className="v-pay-icon" />
+                <div>
+                  <h4 className="v-pay-title">Direct Payment via UPI / QR</h4>
+                  <p className="v-pay-subtitle">Scan QR or tap to pay directly with any UPI app</p>
+                </div>
+              </div>
+              <span className="v-pay-badge-instant">⚡ Instant Pay</span>
+            </div>
+
+            <div className="v-payment-body">
+              {/* QR Container with AR DELIVERO Center Badge */}
+              <div className="v-qr-canvas-box">
+                <canvas ref={paymentQrRef} className="v-pay-qr-canvas"></canvas>
+                <div className="v-qr-center-chip">
+                  <span className="v-chip-main">AR</span>
+                  <span className="v-chip-sub">DELIVERO</span>
+                </div>
+              </div>
+
+              {/* Payee Info */}
+              <div className="v-pay-meta">
+                <div className="v-pay-meta-row">
+                  <span className="v-pay-lbl">Payee:</span>
+                  <strong className="v-pay-val">{payeeName}</strong>
+                </div>
+
+                <div className="v-pay-meta-row">
+                  <span className="v-pay-lbl">UPI ID:</span>
+                  <div className="v-upi-copy-wrap">
+                    <span className="v-upi-text font-mono">{upiId}</span>
+                    <button 
+                      type="button" 
+                      className="v-copy-btn" 
+                      onClick={handleCopyUpi} 
+                      title="Copy UPI ID"
+                    >
+                      {copiedUpi ? <Check size={13} color="#16a34a" /> : <Copy size={13} />}
+                      <span>{copiedUpi ? 'Copied' : 'Copy'}</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div className="v-pay-meta-row">
+                  <span className="v-pay-lbl">Amount:</span>
+                  <strong className="v-pay-amt font-mono">₹{amountStr}</strong>
+                </div>
+
+                <div className="v-pay-bank-line">
+                  <span>Bank: <strong>{bankBranch}</strong></span>
+                  <span>A/C: <strong>{bankAcct}</strong> • IFSC: <strong>{bankIfsc}</strong></span>
+                </div>
+              </div>
+            </div>
+
+            {/* Mobile 1-Tap Payment Link */}
+            <a 
+              href={upiUri} 
+              className="v-direct-pay-button"
+            >
+              <div className="v-btn-top">
+                <span>⚡ Pay ₹{amountStr} via UPI App</span>
+              </div>
+              <div className="v-btn-sub">
+                Opens Google Pay, PhonePe, Paytm, BHIM or any UPI app
+              </div>
+            </a>
           </div>
 
           {/* Security Seal */}
