@@ -8,8 +8,6 @@ dist/
 build/
 
 # Environment variables & local secrets
-.env
-.env.local
 .env.development.local
 .env.test.local
 .env.production.local
@@ -24,7 +22,7 @@ server.log
 # Editor and OS files
 .DS_Store
 Thumbs.db
-.vscode/
 .idea/
 
 .vercel
+config.bat

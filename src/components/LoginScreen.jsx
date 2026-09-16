@@ -125,134 +125,142 @@ export default function LoginScreen({ onLogin, availableUsers = [], isLoadingUse
 
   return (
     <div className="login-backdrop">
-      <div className="login-card-container">
-        {/* Brand Header */}
-        <div className="login-brand-header">
-          <ArMartLogo height={58} variant="vertical" showTagline={true} />
-          <div style={{ marginTop: '10px' }}>
-            <div style={{
-              fontSize: '2rem',
-              fontWeight: 800,
-              color: 'rgba(255,255,255,0.92)',
-              letterSpacing: '-0.02em',
-              fontFamily: "'JetBrains Mono', monospace",
-              lineHeight: 1
-            }}>{timeStr}</div>
-            <div style={{
-              fontSize: '0.75rem',
-              color: 'rgba(255,255,255,0.40)',
-              textAlign: 'center',
-              marginTop: '4px',
-              letterSpacing: '0.03em'
-            }}>{dateStr}</div>
+      <div className="login-split-card">
+        {/* LEFT COLUMN: BRANDING & CASHIER DIRECTORY */}
+        <div className="login-col-left">
+          {/* Brand & Clock Header */}
+          <div className="login-brand-header">
+            <ArMartLogo height={52} variant="vertical" showTagline={true} />
+            <div className="login-clock-wrap">
+              <div className="login-clock-time">{timeStr}</div>
+              <div className="login-clock-date">{dateStr}</div>
+            </div>
+            <div className="login-branch-tag">
+              <ShieldCheck size={12} style={{ marginRight: 4 }} />
+              Handwara POS · Terminal #1
+            </div>
           </div>
-          <div className="login-branch-tag">
-            <ShieldCheck size={12} style={{ marginRight: 4 }} />
-            Handwara POS · Terminal #1
-          </div>
-        </div>
 
-        {/* Loading Cashiers State (No dummy accounts shown) */}
-        {isLoadingUsers && availableUsers.length === 0 ? (
-          <div className="login-users-loading-body">
-            <div className="login-loading-spinner-ring"></div>
-            <h3 className="login-loading-title">Loading Authorized Accounts...</h3>
-            <p className="login-loading-sub">Connecting securely with AR Mart Database</p>
-          </div>
-        ) : (
-          <>
-            {/* Cashier Selection */}
-            <div>
-              <label className="login-label">Select Active Cashier</label>
-              <div className="cashier-avatars-row">
+          {/* Cashier Directory */}
+          <div className="login-cashier-section">
+            <div className="login-section-header">
+              <span className="login-label">
+                Select Active Cashier ({availableUsers.length})
+              </span>
+            </div>
+
+            {isLoadingUsers && availableUsers.length === 0 ? (
+              <div className="login-users-loading-body">
+                <div className="login-loading-spinner-ring"></div>
+                <h3 className="login-loading-title">Loading Authorized Accounts...</h3>
+                <p className="login-loading-sub">Connecting with AR Mart Database</p>
+              </div>
+            ) : (
+              <div className="cashier-avatars-grid">
                 {availableUsers.map(u => (
                   <div
                     key={u.username}
                     className={`cashier-avatar-card ${selectedUser === u.username ? 'active' : ''}`}
                     onClick={() => { setSelectedUser(u.username); setPin(''); setError(''); }}
                   >
-                    <img src={u.avatar} alt={u.name} className="c-avatar-img" />
+                    <div className="c-avatar-wrap">
+                      <img src={u.avatar} alt={u.name} className="c-avatar-img" />
+                      {selectedUser === u.username && (
+                        <div className="c-check">✓</div>
+                      )}
+                    </div>
                     <div className="c-info">
                       <span className="c-name">{u.name}</span>
-                      <span className="c-role">{u.role}</span>
+                      <span className={`c-role-pill role-${(u.role || '').toLowerCase().replace(/[^a-z0-9]/g, '-')}`}>
+                        {u.role}
+                      </span>
                     </div>
-                    {selectedUser === u.username && (
-                      <div className="c-check">✓</div>
-                    )}
                   </div>
                 ))}
               </div>
+            )}
+
+            <div className="login-footer-hint">
+              Arrow keys (← / → / ↑ / ↓) select Cashier
+            </div>
+          </div>
+        </div>
+
+        {/* VERTICAL DIVIDER */}
+        <div className="login-col-divider"></div>
+
+        {/* RIGHT COLUMN: PIN ENTRY & NUMPAD */}
+        <div className="login-col-right">
+          {/* Active Cashier Highlight */}
+          <div className="login-active-cashier-banner">
+            <div className="active-cashier-avatar-wrap">
+              <img 
+                src={selectedUserObj?.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop&crop=faces'} 
+                alt={selectedUserObj?.name} 
+                className="active-cashier-avatar" 
+              />
+              <div className="active-cashier-status-dot"></div>
+            </div>
+            <div className="active-cashier-details">
+              <span className="active-cashier-lbl">Active Session</span>
+              <h3 className="active-cashier-name">{selectedUserObj?.name || 'Cashier'}</h3>
+              <div className="active-cashier-meta">
+                <span className="active-cashier-role">{selectedUserObj?.role || 'Staff'}</span>
+                <span className="active-cashier-ready">● Ready to unlock</span>
+              </div>
+            </div>
+          </div>
+
+          {/* PIN Input & Dot Indicator */}
+          <div className="login-pin-section">
+            <div className="login-pin-header">
+              <span className="login-pin-label">
+                Enter Security PIN
+              </span>
+              <span className="login-keyboard-badge">
+                <Keyboard size={12} /> Keyboard Ready
+              </span>
             </div>
 
-            {/* PIN Input */}
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
-                <label className="login-label" style={{ margin: 0 }}>
-                  Enter PIN for {selectedUserObj?.name || 'Cashier'}
-                </label>
-                <span style={{ fontSize: '0.68rem', color: '#4ade80', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 600 }}>
-                  <Keyboard size={12} /> Keyboard Ready
-                </span>
-              </div>
+            {/* PIN Dot Indicator */}
+            <div className="login-dots-wrap">
+              {[0,1,2,3].map(i => (
+                <div key={i} className={`login-pin-dot ${i < pin.length ? 'filled' : ''}`} />
+              ))}
+            </div>
 
-          {/* PIN Dot Indicator */}
-          <div style={{
-            display: 'flex',
-            justifyContent: 'center',
-            gap: '12px',
-            margin: '12px 0',
-          }}>
-            {[0,1,2,3].map(i => (
-              <div key={i} style={{
-                width: 14,
-                height: 14,
-                borderRadius: '50%',
-                border: '2px solid rgba(74,222,128,0.40)',
-                background: i < pin.length ? '#4ade80' : 'transparent',
-                transition: 'all 0.2s cubic-bezier(0.34,1.56,0.64,1)',
-                transform: i < pin.length ? 'scale(1.15)' : 'scale(1)',
-                boxShadow: i < pin.length ? '0 0 12px rgba(74,222,128,0.5)' : 'none'
-              }} />
+            {error && <div className="login-error-msg">{error}</div>}
+          </div>
+
+          {/* On-Screen Numpad */}
+          <div className="numpad-grid">
+            {['1','2','3','4','5','6','7','8','9','C','0','⌫'].map(k => (
+              <button
+                type="button"
+                key={k}
+                className={`numpad-btn ${k === 'C' ? 'btn-clear' : ''} ${k === '⌫' ? 'btn-backspace' : ''}`}
+                onClick={() => {
+                  if (k === 'C') { setPin(''); setError(''); }
+                  else if (k === '⌫') handleBackspace();
+                  else handleKeypadPress(k);
+                }}
+              >
+                {k}
+              </button>
             ))}
           </div>
 
-          {error && <div className="login-error-msg">{error}</div>}
+          {/* Unlock Submit Button */}
+          <button
+            type="button"
+            className="login-submit-btn"
+            disabled={loading || pin.length === 0 || !selectedUserObj}
+            onClick={() => submitPin(pin)}
+          >
+            <span>{loading ? 'Authenticating...' : 'Unlock POS Terminal'}</span>
+            <ArrowRight size={18} />
+          </button>
         </div>
-
-        {/* On-Screen Numpad */}
-        <div className="numpad-grid">
-          {['1','2','3','4','5','6','7','8','9','C','0','⌫'].map(k => (
-            <button
-              type="button"
-              key={k}
-              className="numpad-btn"
-              style={k === 'C' ? { color: '#f87171' } : k === '⌫' ? { color: '#fb923c', fontSize: '1.2rem' } : {}}
-              onClick={() => {
-                if (k === 'C') { setPin(''); setError(''); }
-                else if (k === '⌫') handleBackspace();
-                else handleKeypadPress(k);
-              }}
-            >
-              {k}
-            </button>
-          ))}
-        </div>
-
-        <button
-          type="button"
-          className="login-submit-btn"
-          disabled={loading || pin.length === 0}
-          onClick={() => submitPin(pin)}
-        >
-          <span>{loading ? 'Authenticating...' : 'Unlock POS Terminal'}</span>
-          <ArrowRight size={18} />
-        </button>
-
-        <div className="login-footer-hint">
-          Arrow keys (← / →) select Cashier · Keyboard & Numpad PIN active · Secure Terminal
-        </div>
-        </>
-        )}
       </div>
     </div>
   );
