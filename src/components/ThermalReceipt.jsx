@@ -2,21 +2,14 @@ import React, { useEffect, useRef } from 'react';
 import QRCode from 'qrcode';
 
 export default function ThermalReceipt({ invoice, storeConfig, isCompact = false }) {
-  const qrCanvasRef = useRef(null);
+  const verifyQrCanvasRef = useRef(null);
+  const paymentQrCanvasRef = useRef(null);
 
   useEffect(() => {
-    if (!invoice || !qrCanvasRef.current) return;
+    if (!invoice) return;
 
-    let payload = '';
-    const mode = storeConfig?.qrMode || 'upi';
-
-    const upiId = storeConfig?.upiId || `${storeConfig?.whatsapp || '9682329952'}@upi`;
-    const payeeName = storeConfig?.bankName || 'AR DELIVERO';
-    const amountVal = Number(invoice.grandTotal || 0).toFixed(2);
-    const cleanInv = String(invoice.invoiceNo || '').replace(/[^a-zA-Z0-9]/g, '_');
-
-    if (mode === 'verify') {
-      // Mobile-friendly verification certificate link (Bypasses cashier login screen)
+    // 1. Generate Top Compact Scan-to-Verify QR Code (Customer Digital Authenticity)
+    if (verifyQrCanvasRef.current) {
       let baseUrl = storeConfig?.verifyBaseUrl;
       if (!baseUrl) {
         baseUrl = `${window.location.origin}/?verify=${encodeURIComponent(invoice.invoiceNo || '')}`;
@@ -24,7 +17,6 @@ export default function ThermalReceipt({ invoice, storeConfig, isCompact = false
         baseUrl = `${baseUrl}?inv=${encodeURIComponent(invoice.invoiceNo || '')}`;
       }
 
-      // Encode structured payload for instant mobile scan & verify
       const compactData = {
         i: invoice.invoiceNo,
         d: invoice.date,
@@ -48,27 +40,41 @@ export default function ThermalReceipt({ invoice, storeConfig, isCompact = false
         f: storeConfig?.fssai || '21026252000118'
       };
 
+      let verifyPayload = baseUrl;
       try {
         const encoded = encodeURIComponent(btoa(unescape(encodeURIComponent(JSON.stringify(compactData)))));
-        payload = `${window.location.origin}/?verifyData=${encoded}`;
+        verifyPayload = `${window.location.origin}/?verifyData=${encoded}`;
       } catch (err) {
-        payload = baseUrl;
+        verifyPayload = baseUrl;
       }
-    } else if (mode === 'offline') {
-      payload = `AR MART OFFICIAL RECEIPT\nInvoice: ${invoice.invoiceNo}\nDate: ${invoice.date} ${invoice.time}\nItems: ${invoice.items?.length || 0} (Qty: ${invoice.totalQty})\nTotal: ₹${amountVal}\nFSSAI: ${storeConfig?.fssai || '21026252000118'}\nVerified Authentic Store Copy`;
-    } else {
-      // Default: Direct UPI Payment QR Code (Scan to Pay with GPay / PhonePe / Paytm)
-      payload = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(payeeName)}&am=${amountVal}&cu=INR&tn=AR_Mart_${cleanInv}`;
+
+      QRCode.toCanvas(verifyQrCanvasRef.current, verifyPayload, {
+        width: isCompact || storeConfig?.paperSize === '58mm' ? 80 : 92,
+        margin: 1,
+        color: {
+          dark: '#000000',
+          light: '#ffffff'
+        }
+      }).catch(err => console.error('Verify QR Render error', err));
     }
 
-    QRCode.toCanvas(qrCanvasRef.current, payload, {
-      width: isCompact || storeConfig?.paperSize === '58mm' ? 140 : 175,
-      margin: 1,
-      color: {
-        dark: '#000000',
-        light: '#ffffff'
-      }
-    }).catch(err => console.error('QR Render error', err));
+    // 2. Generate Bottom Direct UPI Payment QR Code
+    if (paymentQrCanvasRef.current) {
+      const upiId = storeConfig?.upiId || `${storeConfig?.whatsapp || '9682329952'}@upi`;
+      const payeeName = storeConfig?.bankName || 'AR DELIVERO';
+      const amountVal = Number(invoice.grandTotal || 0).toFixed(2);
+      const cleanInv = String(invoice.invoiceNo || '').replace(/[^a-zA-Z0-9]/g, '_');
+      const paymentPayload = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(payeeName)}&am=${amountVal}&cu=INR&tn=AR_Mart_${cleanInv}`;
+
+      QRCode.toCanvas(paymentQrCanvasRef.current, paymentPayload, {
+        width: isCompact || storeConfig?.paperSize === '58mm' ? 140 : 175,
+        margin: 1,
+        color: {
+          dark: '#000000',
+          light: '#ffffff'
+        }
+      }).catch(err => console.error('Payment QR Render error', err));
+    }
   }, [invoice, storeConfig, isCompact]);
 
   if (!invoice) return null;
@@ -110,6 +116,17 @@ export default function ThermalReceipt({ invoice, storeConfig, isCompact = false
       </div>
 
       {/* 2. Top Dashed Line Divider */}
+      <div className="rcpt-dashed-line"></div>
+
+      {/* Top Compact Scan to Verify Bill QR */}
+      <div className="rcpt-top-verify-box">
+        <div className="rcpt-top-verify-title">★ SCAN TO VERIFY BILL ★</div>
+        <div className="rcpt-top-verify-qr-wrap">
+          <canvas ref={verifyQrCanvasRef} className="rcpt-top-verify-canvas"></canvas>
+        </div>
+        <div className="rcpt-top-verify-sub">Official Digital Authenticity Certificate</div>
+      </div>
+
       <div className="rcpt-dashed-line"></div>
 
       {/* 3. Invoice Meta: Invoice No on left, Date & Time on right */}
@@ -270,7 +287,7 @@ export default function ThermalReceipt({ invoice, storeConfig, isCompact = false
         <div className="rcpt-qr-title-sub">Use QR for Payments</div>
         
         <div className="rcpt-qr-container">
-          <canvas ref={qrCanvasRef} className="rcpt-qr-canvas"></canvas>
+          <canvas ref={paymentQrCanvasRef} className="rcpt-qr-canvas"></canvas>
           <div className="rcpt-qr-center-badge">
             <span className="qr-badge-ar">AR</span>
             <span className="qr-badge-sub">DELIVERO</span>
