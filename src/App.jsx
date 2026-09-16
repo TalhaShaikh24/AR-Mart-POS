@@ -72,11 +72,37 @@ export default function App() {
   // Authentication State
   const [currentUser, setCurrentUser] = useState(() => {
     const saved = localStorage.getItem('armart_logged_user');
-    return saved ? JSON.parse(saved) : INITIAL_USERS[0];
+    return saved ? JSON.parse(saved) : null;
   });
   // Terminal Lock State (Always requires PIN on browser launch or reload)
   const [isLocked, setIsLocked] = useState(true);
-  const [availableUsers, setAvailableUsers] = useState(INITIAL_USERS);
+  
+  // Available Cashiers: load cached real users first if available (never dummy accounts)
+  const [availableUsers, setAvailableUsers] = useState(() => {
+    try {
+      const cached = localStorage.getItem('armart_users_cache');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch {
+      // ignore
+    }
+    return [];
+  });
+
+  const [isUsersLoading, setIsUsersLoading] = useState(() => {
+    try {
+      const cached = localStorage.getItem('armart_users_cache');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed) && parsed.length > 0) return false;
+      }
+    } catch {
+      // ignore
+    }
+    return true;
+  });
 
   // App Theme & Fullscreen
   const [darkMode, setDarkMode] = useState(false);
@@ -169,11 +195,21 @@ export default function App() {
       if (iRes && iRes.ok) setInvoices(await iRes.json());
       if (uRes && uRes.ok) {
         const usersData = await uRes.json();
-        if (usersData?.length) setAvailableUsers(usersData);
+        if (usersData && usersData.length > 0) {
+          setAvailableUsers(usersData);
+          localStorage.setItem('armart_users_cache', JSON.stringify(usersData));
+        } else {
+          setAvailableUsers(prev => (prev && prev.length > 0 ? prev : INITIAL_USERS));
+        }
+      } else {
+        setAvailableUsers(prev => (prev && prev.length > 0 ? prev : INITIAL_USERS));
       }
       if (hRes && hRes.ok) setHeldBills(await hRes.json());
     } catch (e) {
       console.warn('Using local fallback state', e);
+      setAvailableUsers(prev => (prev && prev.length > 0 ? prev : INITIAL_USERS));
+    } finally {
+      setIsUsersLoading(false);
     }
   };
 
@@ -718,6 +754,7 @@ export default function App() {
       <LoginScreen 
         onLogin={handleLoginSuccess}
         availableUsers={availableUsers}
+        isLoadingUsers={isUsersLoading}
       />
     );
   }

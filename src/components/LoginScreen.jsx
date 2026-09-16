@@ -2,29 +2,39 @@ import React, { useState, useEffect, useCallback } from 'react';
 import ArMartLogo from './ArMartLogo';
 import { KeyRound, ArrowRight, ShieldCheck, Keyboard } from 'lucide-react';
 
-export default function LoginScreen({ onLogin, availableUsers }) {
-  const [selectedUser, setSelectedUser] = useState(availableUsers[0]?.username || 'zahid');
+export default function LoginScreen({ onLogin, availableUsers = [], isLoadingUsers = false }) {
+  const [selectedUser, setSelectedUser] = useState(() => availableUsers[0]?.username || '');
   const [pin, setPin] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
+  // Automatically select first cashier when availableUsers loads
+  useEffect(() => {
+    if (availableUsers && availableUsers.length > 0) {
+      if (!selectedUser || !availableUsers.some(u => u.username === selectedUser)) {
+        setSelectedUser(availableUsers[0].username);
+      }
+    }
+  }, [availableUsers, selectedUser]);
+
   const selectedUserObj = availableUsers.find(u => u.username === selectedUser) || availableUsers[0];
 
   const submitPin = useCallback(async (pinToSubmit) => {
-    if (!pinToSubmit) return;
+    const targetUser = selectedUser || availableUsers[0]?.username;
+    if (!pinToSubmit || !targetUser) return;
     setLoading(true);
     setError('');
     try {
       const res = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: selectedUser, pin: pinToSubmit.trim() })
+        body: JSON.stringify({ username: targetUser, pin: pinToSubmit.trim() })
       });
       const data = await res.json();
       if (res.ok && data.success) {
         onLogin(data.user);
       } else {
-        const fallback = availableUsers.find(u => u.username === selectedUser && u.pin === pinToSubmit);
+        const fallback = availableUsers.find(u => u.username === targetUser && u.pin === pinToSubmit);
         if (fallback) {
           onLogin(fallback);
         } else {
@@ -33,7 +43,7 @@ export default function LoginScreen({ onLogin, availableUsers }) {
         }
       }
     } catch {
-      const fallback = availableUsers.find(u => u.username === selectedUser && u.pin === pinToSubmit);
+      const fallback = availableUsers.find(u => u.username === targetUser && u.pin === pinToSubmit);
       if (fallback) {
         onLogin(fallback);
       } else {
@@ -68,8 +78,9 @@ export default function LoginScreen({ onLogin, availableUsers }) {
   // Keyboard Event Listener: Allows physical keyboard keys to enter PIN
   useEffect(() => {
     const handleKeyDown = (e) => {
-      // If modal or other active input has focus, ignore
+      // If modal or other active input has focus, or no cashiers loaded, ignore
       if (['INPUT', 'TEXTAREA'].includes(e.target.tagName)) return;
+      if (!availableUsers || availableUsers.length === 0) return;
 
       // Handle numbers 0-9 (from both main keyboard number row and numeric keypad)
       if (/^[0-9]$/.test(e.key)) {
@@ -141,39 +152,48 @@ export default function LoginScreen({ onLogin, availableUsers }) {
           </div>
         </div>
 
-        {/* Cashier Selection */}
-        <div>
-          <label className="login-label">Select Active Cashier</label>
-          <div className="cashier-avatars-row">
-            {availableUsers.map(u => (
-              <div
-                key={u.username}
-                className={`cashier-avatar-card ${selectedUser === u.username ? 'active' : ''}`}
-                onClick={() => { setSelectedUser(u.username); setPin(''); setError(''); }}
-              >
-                <img src={u.avatar} alt={u.name} className="c-avatar-img" />
-                <div className="c-info">
-                  <span className="c-name">{u.name}</span>
-                  <span className="c-role">{u.role}</span>
-                </div>
-                {selectedUser === u.username && (
-                  <div className="c-check">✓</div>
-                )}
+        {/* Loading Cashiers State (No dummy accounts shown) */}
+        {isLoadingUsers && availableUsers.length === 0 ? (
+          <div className="login-users-loading-body">
+            <div className="login-loading-spinner-ring"></div>
+            <h3 className="login-loading-title">Loading Authorized Accounts...</h3>
+            <p className="login-loading-sub">Connecting securely with AR Mart Database</p>
+          </div>
+        ) : (
+          <>
+            {/* Cashier Selection */}
+            <div>
+              <label className="login-label">Select Active Cashier</label>
+              <div className="cashier-avatars-row">
+                {availableUsers.map(u => (
+                  <div
+                    key={u.username}
+                    className={`cashier-avatar-card ${selectedUser === u.username ? 'active' : ''}`}
+                    onClick={() => { setSelectedUser(u.username); setPin(''); setError(''); }}
+                  >
+                    <img src={u.avatar} alt={u.name} className="c-avatar-img" />
+                    <div className="c-info">
+                      <span className="c-name">{u.name}</span>
+                      <span className="c-role">{u.role}</span>
+                    </div>
+                    {selectedUser === u.username && (
+                      <div className="c-check">✓</div>
+                    )}
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-        </div>
+            </div>
 
-        {/* PIN Input */}
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
-            <label className="login-label" style={{ margin: 0 }}>
-              Enter PIN for {selectedUserObj?.name}
-            </label>
-            <span style={{ fontSize: '0.68rem', color: '#4ade80', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 600 }}>
-              <Keyboard size={12} /> Keyboard Ready
-            </span>
-          </div>
+            {/* PIN Input */}
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
+                <label className="login-label" style={{ margin: 0 }}>
+                  Enter PIN for {selectedUserObj?.name || 'Cashier'}
+                </label>
+                <span style={{ fontSize: '0.68rem', color: '#4ade80', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 600 }}>
+                  <Keyboard size={12} /> Keyboard Ready
+                </span>
+              </div>
 
           {/* PIN Dot Indicator */}
           <div style={{
@@ -231,6 +251,8 @@ export default function LoginScreen({ onLogin, availableUsers }) {
         <div className="login-footer-hint">
           Arrow keys (← / →) select Cashier · Keyboard & Numpad PIN active · Secure Terminal
         </div>
+        </>
+        )}
       </div>
     </div>
   );
