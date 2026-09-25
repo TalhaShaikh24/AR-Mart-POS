@@ -4247,36 +4247,126 @@ input:checked + .f-slider::before { transform: translateX(16px); }
 }
 
 /* Items Table */
+/* Items Table */
 .rcpt-items-table {
   width: 100%;
+  table-layout: fixed;
   border-collapse: collapse;
-  font-size: 8pt;
-  margin: 2px 0;
+  font-size: 7.8pt;
+  margin: 3px 0;
+  box-sizing: border-box;
 }
 
 .rcpt-items-table th {
   padding: 4px 1px;
   font-weight: 800;
+  font-size: 7.2pt;
+  letter-spacing: 0.03em;
   text-transform: uppercase;
   color: #000000;
-  vertical-align: bottom;
+  vertical-align: middle;
+  border-bottom: 1px solid #000000;
+  white-space: nowrap;
+  box-sizing: border-box;
 }
 
 .rcpt-items-table td {
   padding: 3px 1px;
   vertical-align: top;
   color: #000000;
+  font-size: 7.8pt;
+  line-height: 1.25;
+  box-sizing: border-box;
 }
 
-.col-num { width: 4%; text-align: left; }
-.col-item { width: 33%; text-align: left; font-weight: 600; word-break: break-word; }
-.col-unit { width: 9%; text-align: center; }
-.col-qty { width: 6%; text-align: center; font-weight: 700; }
-.col-mrp { width: 12%; text-align: right; font-family: 'JetBrains Mono', monospace; font-variant-numeric: tabular-nums; }
-.col-rate { width: 12%; text-align: right; font-weight: 700; font-family: 'JetBrains Mono', monospace; font-variant-numeric: tabular-nums; }
-.col-tax { width: 10%; text-align: right; font-family: 'JetBrains Mono', monospace; font-variant-numeric: tabular-nums; }
-.col-amt { width: 14%; text-align: right; font-weight: 800; font-family: 'JetBrains Mono', monospace; font-variant-numeric: tabular-nums; }
-.sub-th { font-size: 6.5pt; font-weight: 500; text-transform: none; display: block; line-height: 1.1; }
+/* Explicit alignment & width for all columns on both TH and TD */
+.rcpt-items-table th.col-num,
+.rcpt-items-table td.col-num {
+  width: 5%;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.rcpt-items-table th.col-item,
+.rcpt-items-table td.col-item {
+  width: 32%;
+  text-align: left;
+  font-weight: 600;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  padding-right: 2px;
+}
+
+.rcpt-items-table th.col-unit,
+.rcpt-items-table td.col-unit {
+  width: 10%;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.rcpt-items-table th.col-qty,
+.rcpt-items-table td.col-qty {
+  width: 7%;
+  text-align: center;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.rcpt-items-table th.col-mrp,
+.rcpt-items-table td.col-mrp {
+  width: 11%;
+  text-align: right;
+  font-family: 'JetBrains Mono', monospace;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.rcpt-items-table th.col-rate,
+.rcpt-items-table td.col-rate {
+  width: 11%;
+  text-align: right;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.rcpt-items-table th.col-tax,
+.rcpt-items-table td.col-tax {
+  width: 9%;
+  text-align: right;
+  font-family: 'JetBrains Mono', monospace;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.rcpt-items-table th.col-amt,
+.rcpt-items-table td.col-amt {
+  width: 15%;
+  text-align: right;
+  font-weight: 800;
+  font-family: 'JetBrains Mono', monospace;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* 58mm Thermal Sizing */
+.compact-58mm .rcpt-items-table,
+.size-58mm .rcpt-items-table {
+  font-size: 6.8pt;
+}
+
+.compact-58mm .rcpt-items-table th,
+.size-58mm .rcpt-items-table th {
+  font-size: 6.2pt;
+  padding: 2px 0.5px;
+}
+
+.compact-58mm .rcpt-items-table td,
+.size-58mm .rcpt-items-table td {
+  font-size: 6.8pt;
+  padding: 2px 0.5px;
+}
 
 /* Totals Section */
 .rcpt-totals-section {
@@ -4552,6 +4642,7 @@ input:checked + .f-slider::before { transform: translateX(16px); }
   .thermal-receipt table {
     display: table !important;
     width: 100% !important;
+    table-layout: fixed !important;
   }
 
   .thermal-receipt thead {

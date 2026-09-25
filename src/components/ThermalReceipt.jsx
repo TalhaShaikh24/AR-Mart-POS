@@ -166,13 +166,13 @@ export default function ThermalReceipt({ invoice, storeConfig, isCompact = false
         <thead>
           <tr>
             <th className="col-num">#</th>
-            <th className="col-item">ITEMS</th>
+            <th className="col-item">ITEM</th>
             <th className="col-unit">UNIT</th>
             <th className="col-qty">QTY</th>
             <th className="col-mrp">MRP</th>
-            <th className="col-rate">RATE<br/><span className="sub-th">(Per Unit)</span></th>
-            <th className="col-tax">TAX<br/><span className="sub-th">(Per Unit)</span></th>
-            <th className="col-amt">AMOUNT</th>
+            <th className="col-rate">RATE</th>
+            <th className="col-tax">TAX</th>
+            <th className="col-amt">AMT</th>
           </tr>
         </thead>
         <tbody>
