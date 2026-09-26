@@ -223,13 +223,18 @@ export default function LoginScreen({ onLogin, availableUsers = [], isLoadingUse
             </div>
 
             {/* PIN Dot Indicator */}
-            <div className="login-dots-wrap">
+            <div className={`login-dots-wrap ${error ? 'shake' : ''}`}>
               {[0,1,2,3].map(i => (
-                <div key={i} className={`login-pin-dot ${i < pin.length ? 'filled' : ''}`} />
+                <div key={i} className={`login-pin-dot ${i < pin.length ? 'filled' : ''} ${error ? 'error' : ''}`} />
               ))}
             </div>
 
-            {error && <div className="login-error-msg">{error}</div>}
+            {/* Fixed Height Error Slot to prevent keyboard layout shift */}
+            <div className="login-error-slot">
+              <div className={`login-error-msg ${error ? 'visible' : ''}`}>
+                {error || ''}
+              </div>
+            </div>
           </div>
 
           {/* On-Screen Numpad */}
