@@ -44,6 +44,7 @@ import {
   PauseCircle,
   CreditCard,
   Banknote,
+  Coins,
   QrCode,
   Tag,
   Check,
@@ -141,6 +142,7 @@ export default function App() {
   const [discountAmount, setDiscountAmount] = useState(0);
   const [appliedPromo, setAppliedPromo] = useState('');
   const [taxPercent, setTaxPercent] = useState('0'); // custom GST % input (e.g. 0, 5, 12, 18)
+  const [amountReceived, setAmountReceived] = useState(''); // Amount received from customer
   const [roundoffEnabled, setRoundoffEnabled] = useState(true);
   const [paymentMethod, setPaymentMethod] = useState('Cash'); // 'Cash' | 'Card' | 'Scan'
 
@@ -321,8 +323,11 @@ export default function App() {
     setCart([]);
     setCustomerName('');
     setCustomerPhone('');
+    setCustomerAddress('');
     setDiscountAmount(0);
     setPromoCode('');
+    setAppliedPromo('');
+    setAmountReceived('');
     generateInvoiceSequence();
   };
 
@@ -403,6 +408,11 @@ export default function App() {
   const totalPayable = roundoffEnabled ? Math.round(rawPayable) : rawPayable;
   const roundoffDiff = Math.abs(totalPayable - rawPayable);
 
+  // Customer Cash Tender / Received calculations
+  const parsedReceived = amountReceived !== '' ? parseFloat(amountReceived) : null;
+  const activeReceived = parsedReceived !== null && !isNaN(parsedReceived) ? parsedReceived : totalPayable;
+  const changeOrRemaining = activeReceived - totalPayable;
+
   // Apply Promo code
   const handleApplyPromo = (e) => {
     if (e) e.preventDefault();
@@ -450,6 +460,7 @@ export default function App() {
       customerName: customerName || 'Walk-in',
       customerPhone,
       customerAddress,
+      amountReceived,
       items: cart,
       subtotal,
       discount: discountAmount,
@@ -477,6 +488,7 @@ export default function App() {
     setPromoCode('');
     setAppliedPromo('');
     setTaxPercent('0');
+    setAmountReceived('');
     generateInvoiceSequence();
     alert(`Bill ${held.invoiceNo} is now on hold.`);
   };
@@ -488,6 +500,7 @@ export default function App() {
     setCustomerAddress(bill.customerAddress || '');
     setDiscountAmount(bill.discount || 0);
     setTaxPercent(bill.taxPercent !== undefined ? String(bill.taxPercent) : '0');
+    setAmountReceived(bill.amountReceived || '');
     setInvoiceSeq(bill.invoiceNo);
     setShowHeldBills(false);
 
@@ -499,6 +512,10 @@ export default function App() {
   // Prepare full invoice object for thermal printing & storage
   const buildFinalInvoice = () => {
     const now = new Date();
+    const parsedReceived = amountReceived !== '' ? parseFloat(amountReceived) : null;
+    const finalReceived = parsedReceived !== null && !isNaN(parsedReceived) ? parsedReceived : totalPayable;
+    const finalChange = finalReceived - totalPayable;
+
     return {
       invoiceNo: `ARM/${now.getFullYear()}/${String(now.getMonth()+1).padStart(2,'0')}/${String(now.getDate()).padStart(2,'0')}/${invoiceSeq.replace('#','')}`,
       date: now.toLocaleDateString('en-GB'),
@@ -526,6 +543,10 @@ export default function App() {
       tax: tax,
       taxPercent: numericTaxPercent,
       grandTotal: totalPayable,
+      amountReceived: finalReceived,
+      receivedAmount: finalReceived,
+      changeAmount: finalChange,
+      remainingAmount: finalChange < 0 ? Math.abs(finalChange) : 0,
       paymentMethod: paymentMethod,
       biller: currentUser.name,
       store: {
@@ -572,6 +593,7 @@ export default function App() {
       setPromoCode('');
       setAppliedPromo('');
       setTaxPercent('0');
+      setAmountReceived('');
       generateInvoiceSequence();
     }, 400);
   };
@@ -598,6 +620,7 @@ export default function App() {
       setPromoCode('');
       setAppliedPromo('');
       setTaxPercent('0');
+      setAmountReceived('');
       generateInvoiceSequence();
     }, 300);
   };
@@ -1380,6 +1403,88 @@ export default function App() {
                     <span>Scan</span>
                     {paymentMethod === 'Scan' && <div className="method-check"><Check size={12} /></div>}
                   </div>
+                </div>
+              </div>
+
+              {/* Customer Tender: Received Amount & Remaining / Change */}
+              <div className="f-tender-card">
+                <div className="f-tender-header">
+                  <div className="f-tender-title">
+                    <Coins size={15} className="f-tender-icon" />
+                    <span>Amount Received</span>
+                  </div>
+                  {amountReceived !== '' && (
+                    <button 
+                      type="button" 
+                      className="f-tender-clear-btn" 
+                      onClick={() => setAmountReceived('')}
+                      title="Reset Received Amount"
+                    >
+                      Reset ✕
+                    </button>
+                  )}
+                </div>
+
+                <div className="f-tender-input-wrap">
+                  <span className="f-tender-currency">₹</span>
+                  <input 
+                    type="number" 
+                    min="0" 
+                    step="any"
+                    placeholder={totalPayable > 0 ? totalPayable.toFixed(2) : "0.00"} 
+                    value={amountReceived}
+                    onChange={e => setAmountReceived(e.target.value)}
+                    className="f-tender-input"
+                    title="Enter amount received from customer"
+                  />
+                  <button 
+                    type="button" 
+                    className={`f-tender-exact-btn ${amountReceived === String(totalPayable) ? 'active' : ''}`}
+                    onClick={() => setAmountReceived(String(totalPayable))}
+                    title="Fill Exact Payable"
+                  >
+                    Exact
+                  </button>
+                </div>
+
+                {/* Quick Cash Denomination Chips */}
+                {totalPayable > 0 && (
+                  <div className="f-tender-chips">
+                    {[
+                      Math.ceil(totalPayable / 50) * 50,
+                      Math.ceil(totalPayable / 100) * 100,
+                      500,
+                      1000,
+                      2000
+                    ]
+                      .filter((val, idx, self) => val >= totalPayable && self.indexOf(val) === idx)
+                      .slice(0, 4)
+                      .map(denom => (
+                        <button
+                          key={denom}
+                          type="button"
+                          className={`f-tender-chip ${Number(amountReceived) === denom ? 'active' : ''}`}
+                          onClick={() => setAmountReceived(String(denom))}
+                        >
+                          ₹{denom}
+                        </button>
+                      ))}
+                  </div>
+                )}
+
+                {/* Live Return / Due Balance Display */}
+                <div className={`f-balance-status-box ${changeOrRemaining >= 0 ? 'is-return' : 'is-due'}`}>
+                  <div className="f-balance-text-group">
+                    <span className="f-balance-sub">
+                      {changeOrRemaining >= 0 ? 'Change to Return' : 'Remaining Due'}
+                    </span>
+                    <span className="f-balance-val">
+                      ₹{Math.abs(changeOrRemaining).toFixed(2)}
+                    </span>
+                  </div>
+                  <span className={`f-balance-badge ${changeOrRemaining >= 0 ? 'badge-return' : 'badge-due'}`}>
+                    {changeOrRemaining >= 0 ? 'Return Wapis' : 'Baqi Due'}
+                  </span>
                 </div>
               </div>
 

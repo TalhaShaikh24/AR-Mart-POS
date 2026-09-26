@@ -1588,6 +1588,258 @@ input:checked + .f-slider::before { transform: translateX(16px); }
   justify-content: center;
 }
 
+/* Amount Received & Balance / Remaining Card in POS Sidebar */
+.f-tender-card {
+  background: var(--bg-surface, #ffffff);
+  border: 1.5px solid var(--border-md, #e2e8f0);
+  border-radius: var(--r-lg, 12px);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.f-tender-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.f-tender-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.74rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted, #64748b);
+}
+
+.f-tender-icon {
+  color: var(--brand-green, #16a34a);
+}
+
+.f-tender-clear-btn {
+  background: none;
+  border: none;
+  color: #ef4444;
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+  transition: background 0.15s;
+}
+
+.f-tender-clear-btn:hover {
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.f-tender-input-wrap {
+  display: flex;
+  align-items: center;
+  background: var(--bg-card, #f8fafc);
+  border: 1.5px solid var(--border-md, #cbd5e1);
+  border-radius: var(--r-md, 8px);
+  padding: 2px 8px;
+  gap: 6px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.f-tender-input-wrap:focus-within {
+  border-color: var(--brand-green, #16a34a);
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.15);
+  background: #ffffff;
+}
+
+.f-tender-currency {
+  font-size: 1.15rem;
+  font-weight: 900;
+  color: var(--text-primary, #0f172a);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.f-tender-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-size: 1.15rem;
+  font-weight: 800;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--text-primary, #0f172a);
+  outline: none;
+  padding: 8px 4px;
+  min-width: 0;
+}
+
+.f-tender-exact-btn {
+  background: var(--brand-green-subtle, #f0fdf4);
+  color: var(--brand-green-dark, #15803d);
+  border: 1px solid var(--brand-green, #16a34a);
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 5px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.f-tender-exact-btn:hover,
+.f-tender-exact-btn.active {
+  background: var(--brand-green, #16a34a);
+  color: #ffffff;
+}
+
+.f-tender-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.f-tender-chip {
+  flex: 1;
+  min-width: 48px;
+  padding: 4px 6px;
+  background: var(--bg-card, #f1f5f9);
+  border: 1px solid var(--border-md, #e2e8f0);
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--text-primary, #334155);
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s ease;
+}
+
+.f-tender-chip:hover {
+  border-color: var(--brand-green, #16a34a);
+  background: var(--brand-green-subtle, #f0fdf4);
+  color: var(--brand-green-dark, #15803d);
+}
+
+.f-tender-chip.active {
+  background: var(--brand-green, #16a34a);
+  border-color: var(--brand-green, #16a34a);
+  color: #ffffff;
+}
+
+/* Balance Status Box */
+.f-balance-status-box {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: var(--r-md, 8px);
+  transition: all 0.2s ease;
+}
+
+.f-balance-status-box.is-return {
+  background: #f0fdf4;
+  border: 1.5px solid #86efac;
+}
+
+.f-balance-status-box.is-due {
+  background: #fef2f2;
+  border: 1.5px solid #fca5a5;
+}
+
+.f-balance-text-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.f-balance-sub {
+  font-size: 0.70rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.is-return .f-balance-sub {
+  color: #15803d;
+}
+
+.is-due .f-balance-sub {
+  color: #b91c1c;
+}
+
+.f-balance-val {
+  font-size: 1.25rem;
+  font-weight: 900;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.is-return .f-balance-val {
+  color: #15803d;
+}
+
+.is-due .f-balance-val {
+  color: #dc2626;
+}
+
+.f-balance-badge {
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 4px 8px;
+  border-radius: 20px;
+}
+
+.badge-return {
+  background: #dcfce7;
+  color: #166534;
+  border: 1px solid #86efac;
+}
+
+.badge-due {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fca5a5;
+}
+
+/* Dark mode adjustments */
+.dark .f-tender-card {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+.dark .f-tender-input-wrap {
+  background: #0f172a;
+  border-color: #334155;
+}
+
+.dark .f-tender-chip {
+  background: #0f172a;
+  border-color: #334155;
+  color: #cbd5e1;
+}
+
+.dark .f-balance-status-box.is-return {
+  background: rgba(16, 185, 129, 0.15);
+  border-color: rgba(16, 185, 129, 0.4);
+}
+
+.dark .is-return .f-balance-sub,
+.dark .is-return .f-balance-val {
+  color: #34d399;
+}
+
+.dark .f-balance-status-box.is-due {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.4);
+}
+
+.dark .is-due .f-balance-sub,
+.dark .is-due .f-balance-val {
+  color: #f87171;
+}
+
 /* Action Buttons (Solid Colors) */
 .f-invoice-actions {
   display: flex;
@@ -4425,6 +4677,21 @@ input:checked + .f-slider::before { transform: translateX(16px); }
 
 .grand-total-line .grand-val {
   font-size: 11pt;
+  font-weight: 900;
+}
+
+.rcpt-tendered-line {
+  margin-top: 3px;
+  padding-top: 3px;
+  border-top: 1px dashed #000000;
+}
+
+.rcpt-change-line {
+  font-weight: 900;
+}
+
+.rcpt-change-line .totals-val {
+  font-size: 8.8pt;
   font-weight: 900;
 }
 

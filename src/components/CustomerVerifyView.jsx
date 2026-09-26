@@ -242,6 +242,20 @@ export default function CustomerVerifyView({ invoiceData, onBack, storeConfig })
               <span>TOTAL PAID</span>
               <span className="v-grand-amt">₹{Number(invoice.grandTotal || 0).toFixed(2)}</span>
             </div>
+            {invoice.amountReceived !== undefined && (
+              <>
+                <div className="v-total-row" style={{ marginTop: '6px', paddingTop: '6px', borderTop: '1px dashed #cbd5e1' }}>
+                  <span>Received ({invoice.paymentMethod || 'Cash'})</span>
+                  <span className="font-mono">₹{Number(invoice.amountReceived || 0).toFixed(2)}</span>
+                </div>
+                <div className="v-total-row" style={{ fontWeight: 700 }}>
+                  <span>{Number(invoice.changeAmount || 0) >= 0 ? 'Change / Return' : 'Remaining Due'}</span>
+                  <span className="font-mono" style={{ color: Number(invoice.changeAmount || 0) < 0 ? '#dc2626' : '#16a34a' }}>
+                    ₹{Math.abs(Number(invoice.changeAmount || 0)).toFixed(2)}
+                  </span>
+                </div>
+              </>
+            )}
           </div>
 
           {/* Direct Payment QR & 1-Tap UPI Pay */}

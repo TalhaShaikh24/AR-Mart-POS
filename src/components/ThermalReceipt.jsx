@@ -89,6 +89,19 @@ export default function ThermalReceipt({ invoice, storeConfig, isCompact = false
   const tax = Number(invoice.tax || 0);
   const grandTotal = Number(invoice.grandTotal || 0);
 
+  // Customer Cash Received & Change / Remaining Amount
+  const rawReceived = invoice.amountReceived !== undefined && invoice.amountReceived !== null && invoice.amountReceived !== ''
+    ? Number(invoice.amountReceived)
+    : (invoice.receivedAmount !== undefined && invoice.receivedAmount !== null && invoice.receivedAmount !== ''
+      ? Number(invoice.receivedAmount)
+      : grandTotal);
+  const receivedAmount = !isNaN(rawReceived) ? rawReceived : grandTotal;
+
+  const rawChange = invoice.changeAmount !== undefined && invoice.changeAmount !== null && invoice.changeAmount !== ''
+    ? Number(invoice.changeAmount)
+    : (receivedAmount - grandTotal);
+  const changeAmount = !isNaN(rawChange) ? rawChange : 0;
+
   const formatMoney = (val) => {
     return Number(val || 0).toLocaleString('en-IN', {
       minimumFractionDigits: 2,
@@ -201,7 +214,7 @@ export default function ThermalReceipt({ invoice, storeConfig, isCompact = false
       {/* 6. Solid Line Divider */}
       <div className="rcpt-solid-line"></div>
 
-      {/* 7. Totals Section (Left: Total Items, Total Qty; Right: Sub Total, Disc, Tax, TOTAL AMOUNT) */}
+      {/* 7. Totals Section (Left: Total Items, Total Qty, Pay Mode; Right: Sub Total, Disc, Tax, TOTAL AMOUNT, Received, Change) */}
       <div className="rcpt-totals-section">
         <div className="rcpt-totals-left">
           <div className="totals-line">
@@ -213,6 +226,11 @@ export default function ThermalReceipt({ invoice, storeConfig, isCompact = false
             <span className="totals-lbl">Total Quantity</span>
             <span className="totals-colon">:</span>
             <span className="totals-val font-mono"><strong>{totalQty}</strong></span>
+          </div>
+          <div className="totals-line">
+            <span className="totals-lbl">Pay Mode</span>
+            <span className="totals-colon">:</span>
+            <span className="totals-val font-mono"><strong>{invoice.paymentMethod || 'Cash'}</strong></span>
           </div>
         </div>
 
@@ -238,6 +256,16 @@ export default function ThermalReceipt({ invoice, storeConfig, isCompact = false
             <span className="totals-lbl bold">TOTAL AMOUNT</span>
             <span className="totals-colon">:</span>
             <span className="totals-val bold font-mono grand-val">₹{formatMoney(grandTotal)}</span>
+          </div>
+          <div className="totals-line rcpt-tendered-line">
+            <span className="totals-lbl">Received</span>
+            <span className="totals-colon">:</span>
+            <span className="totals-val font-mono">₹{formatMoney(receivedAmount)}</span>
+          </div>
+          <div className="totals-line rcpt-change-line">
+            <span className="totals-lbl bold">{changeAmount >= 0 ? 'Change' : 'Remaining Due'}</span>
+            <span className="totals-colon">:</span>
+            <span className="totals-val bold font-mono">₹{formatMoney(Math.abs(changeAmount))}</span>
           </div>
         </div>
       </div>
